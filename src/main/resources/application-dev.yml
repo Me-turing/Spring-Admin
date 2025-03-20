@@ -1,0 +1,130 @@
+# 开发环境服务器配置
+server:
+  port: 8080                    # 开发环境服务器端口
+
+# 开发环境Spring配置
+spring:
+  datasource:
+    # 开发环境数据库配置
+    url: jdbc:sqlserver://123.60.68.66:1433;databaseName=demo;encrypt=true;trustServerCertificate=true  # 开发环境数据库URL
+    username: Demo                # 开发环境数据库用户名
+    password: 2ZZDar78bFRBNpfz       # 开发环境数据库密码
+    druid:
+      # 开发环境连接池配置
+      initial-size: 5          # 初始连接数
+      min-idle: 5              # 最小空闲连接数
+      max-active: 20           # 最大活动连接数
+      max-wait: 60000          # 获取连接等待超时时间
+      
+      # 开发环境检测配置
+      test-while-idle: true    # 空闲时检测连接是否有效
+      time-between-eviction-runs-millis: 60000  # 检测间隔时间
+      min-evictable-idle-time-millis: 300000    # 最小空闲时间
+      max-evictable-idle-time-millis: 900000    # 最大空闲时间
+      
+      # 开发环境监控配置
+      web-stat-filter:         # Web监控过滤器
+        enabled: true          # 启用Web监控
+        url-pattern: /*        # 监控的URL模式
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"  # 排除的URL
+        session-stat-enable: true  # 是否监控Session
+        session-stat-max-count: 1000  # 最大Session数
+        profile-enable: true   # 是否监控单个URL调用信息
+        
+      stat-view-servlet:       # 监控页面配置
+        enabled: true          # 启用监控页面
+        url-pattern: /druid/*  # 监控页面URL
+        reset-enable: false    # 是否允许重置数据
+        login-username: admin  # 监控页面登录用户名
+        login-password: admin  # 监控页面登录密码
+        allow: ""             # 允许访问的IP
+        deny: ""              # 禁止访问的IP
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"  # 排除的URL
+        
+      # 开发环境过滤器配置
+      filter:                  # 过滤器配置
+        stat:                  # 统计过滤器
+          enabled: true        # 启用统计
+          log-slow-sql: true   # 记录慢SQL
+          slow-sql-millis: 2000  # 慢SQL阈值
+        wall:                  # 防火墙过滤器
+          enabled: true        # 启用防火墙
+          config:
+            multi-statement-allow: true  # 允许执行多条SQL
+        slf4j:                 # 日志过滤器
+          enabled: true        # 启用日志
+          statement-log-enabled: true    # 记录SQL执行日志
+          statement-create-after-log-enabled: false  # 创建连接后是否记录日志
+          statement-close-after-log-enabled: true    # 关闭连接后是否记录日志
+          result-set-open-after-log-enabled: false   # 打开结果集后是否记录日志
+          result-set-close-after-log-enabled: false  # 关闭结果集后是否记录日志
+
+  data:
+    redis:
+      # 开发环境Redis配置
+      host: 123.60.68.66          # Redis服务器地址
+      port: 6379              # Redis服务器端口
+      password: 123456              # Redis服务器密码，开发环境可以为空
+      database: 0             # Redis数据库索引
+      timeout: 5000           # 连接超时时间，单位毫秒
+      lettuce:
+        pool:
+          max-active: 8       # 连接池最大活动连接数
+          max-wait: -1        # 连接池最大阻塞等待时间，负值表示没有限制
+          max-idle: 8         # 连接池最大空闲连接数
+          min-idle: 0         # 连接池最小空闲连接数
+
+# 开发环境日志配置
+logging:
+  level:
+    root: info                # 根日志级别
+    com.ocbc.les: debug       # 应用日志级别，开发环境设置为debug
+    org.springframework.web: debug  # Spring Web日志级别
+    org.springframework.security: debug  # Spring Security日志级别
+    org.mybatis: debug        # MyBatis日志级别
+  file:
+    name: logs/risk-management-dev.log  # 开发环境日志文件路径
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"  # 控制台日志格式
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"     # 文件日志格式
+
+# 开发环境Spring Security配置
+spring.security.debug: true    # 开启Spring Security调试模式，方便排查问题
+
+# 开发环境Actuator监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'          # 暴露所有监控端点，开发环境可以暴露所有
+  endpoint:
+    health:
+      show-details: always    # 显示详细健康信息
+  info:
+    env:
+      enabled: true          # 启用环境信息
+    build:
+      enabled: true          # 启用构建信息
+
+# 开发环境MyBatis配置
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发环境SQL日志实现，打印SQL语句
+
+# 开发环境Swagger配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html    # Swagger UI路径
+    enabled: true             # 启用Swagger UI
+  api-docs:
+    enabled: true             # 启用API文档
+    path: /v3/api-docs        # API文档路径
+
+# 开发环境Knife4j配置
+knife4j:
+  enable: true                # 启用Knife4j
+  setting:
+    enable-swagger-models: true  # 启用实体类
+    enable-document-manage: true  # 启用文档管理
+    enable-version: false        # 关闭版本控制
+    enable-reload-cache-parameter: true  # 启用参数缓存刷新，方便开发调试 
