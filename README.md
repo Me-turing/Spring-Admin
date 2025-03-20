@@ -1,50 +1,17 @@
-# OCBC LES Risk Management System
+# 大额风险管理系统
 
 ## 项目简介
-OCBC LES风险管理系统是一个基于Spring Boot 3的企业级风险控制平台，提供全面的风险评估、监控和管理功能。
+大额风险管理系统是一个基于Spring Boot 3的企业级风险管理系统,用于管理和控制大额交易风险。系统提供完整的用户权限管理、风险规则配置、交易监控等功能。
 
 ## 技术栈
-- 后端框架：Spring Boot 3.2.3
-- 安全框架：Spring Security + JWT
-- 持久层框架：MyBatis 3.0.3
-- 数据库：SQL Server 2022
-- 缓存：Redis + Caffeine
-- 连接池：Druid 1.2.24
-- API文档：Knife4j 4.5.0
-- 开发工具：Lombok
-
-## 环境要求
-- JDK 21+
-- Maven 3.8+
-- SQL Server 2022
-- Redis 6.0+
-- IDE推荐：IntelliJ IDEA 2023.3+
-
-## 快速开始
-
-### 1. 克隆项目
-```bash
-git clone https://github.com/your-username/risk-management.git
-cd risk-management
-```
-
-### 2. 配置数据库
-- 创建数据库
-- 修改`application-dev.yml`中的数据库配置
-
-### 3. 配置Redis
-- 确保Redis服务已启动
-- 修改`application-dev.yml`中的Redis配置
-
-### 4. 编译运行
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-### 5. 访问系统
-- 接口文档：http://localhost:8080/doc.html
-- 监控页面：http://localhost:8080/druid
+- 后端框架: Spring Boot 3
+- 安全框架: Spring Security + JWT
+- 持久层框架: MyBatis
+- 数据库: SQL Server 2022
+- 缓存: Redis
+- API文档: Swagger 2 + Knife4j
+- 数据库连接池: Druid
+- 日志框架: SLF4J + Logback
 
 ## 项目结构
 ```
@@ -55,76 +22,92 @@ src/
 │   │       ├── common/                # 公共组件
 │   │       │   ├── config/            # 全局配置类
 │   │       │   ├── exception/         # 全局异常处理
-│   │       │   ├── util/              # 通用工具类
-│   │       │   ├── constant/          # 常量定义
-│   │       │   ├── aspect/            # 切面定义
-│   │       │   ├── annotation/        # 自定义注解
-│   │       │   └── response/          # 统一响应结构
+│   │       │   ├── response/          # 统一响应结构
 │   │       ├── frame/                 # 框架功能
 │   │       │   ├── security/          # 安全相关
-│   │       │   ├── redis/             # Redis相关
-│   │       │   ├── mybatis/           # MyBatis相关
 │   │       │   └── swagger/           # Swagger配置
 │   │       ├── modules/               # 业务模块
-│   │       │   ├── system/            # 系统管理模块
-│   │       │   └── risk/              # 风险管理模块
+│   │       │   └── system/            # 系统管理模块
 │   │       └── RiskManagementApplication.java
 │   └── resources/
 │       ├── application.yml            # 主配置文件
 │       ├── application-dev.yml        # 开发环境配置
-│       ├── application-test.yml       # 测试环境配置
-│       ├── application-prod.yml       # 生产环境配置
-│       └── mapper/                    # MyBatis映射文件
-└── test/                             # 测试代码
+│       └── db/                        # 数据库脚本
+│           ├── schema.sql             # 表结构
+│           └── dml.sql                # 初始数据
 ```
+
+## 功能特性
+- 用户认证与授权
+- 角色权限管理
+- 菜单管理
+- 组织架构管理
+- 风险规则配置
+- 交易监控
+- 操作审计
+
+## 开发环境要求
+- JDK 17+
+- Maven 3.8+
+- SQL Server 2022
+- Redis 6.0+
+
+## 快速开始
+
+### 1. 环境准备
+- 安装JDK 17
+- 安装Maven 3.8
+- 安装SQL Server 2022
+- 安装Redis 6.0
+
+### 2. 数据库配置
+- 创建数据库
+- 执行 `db/schema.sql` 创建表结构
+- 执行 `db/dml.sql` 初始化数据
+
+### 3. 配置文件
+- 修改 `application-dev.yml` 中的数据库连接信息
+- 修改 `application-dev.yml` 中的Redis连接信息
+
+### 4. 启动项目
+```bash
+mvn spring-boot:run
+```
+
+### 5. 访问接口
+- 接口文档: http://localhost:8080/doc.html
+- 默认账号: admin
+- 默认密码: 123456
 
 ## 开发规范
-
-### 代码规范
 - 遵循阿里巴巴Java开发手册
 - 使用统一的代码格式化工具
-- 类名使用PascalCase
-- 方法名使用camelCase
-- 常量使用UPPER_SNAKE_CASE
-
-### 提交规范
-- feat: 新功能
-- fix: 修复bug
-- docs: 文档更新
-- style: 代码格式调整
-- refactor: 重构
-- test: 测试相关
-- chore: 构建过程或辅助工具的变动
-
-### 分支管理
-- main: 主分支，用于生产环境
-- develop: 开发分支
-- feature/*: 功能分支
-- hotfix/*: 紧急修复分支
-- release/*: 发布分支
+- 提交代码前进行代码审查
+- 编写单元测试用例
 
 ## 部署说明
-
-### 开发环境
+1. 打包
 ```bash
-mvn spring-boot:run -Dspring.profiles.active=dev
+mvn clean package
 ```
 
-### 测试环境
+2. 运行
 ```bash
-mvn spring-boot:run -Dspring.profiles.active=test
+java -jar target/risk-management-1.0.0.jar
 ```
 
-### 生产环境
-```bash
-mvn spring-boot:run -Dspring.profiles.active=prod
-```
+## 版本历史
+- v1.0.0 (2024-03-20)
+  - 初始化项目
+  - 完成基础框架搭建
+  - 实现用户认证与授权
+  - 完成系统管理模块
 
 ## 贡献指南
 1. Fork 项目
-2. 创建功能分支
+2. 创建特性分支
 3. 提交代码
-4. 发起 Pull Request
+4. 创建Pull Request
 
 ## 许可证
 [MIT License](LICENSE) 
