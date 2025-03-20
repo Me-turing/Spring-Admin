@@ -1,7 +1,9 @@
 package com.ocbc.les.common.config;
 
+import com.ocbc.les.common.interceptor.TraceIdInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -46,5 +48,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/druid/js/");
         registry.addResourceHandler("/druid/img/**")
                 .addResourceLocations("classpath:/META-INF/resources/druid/img/");
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new TraceIdInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/error");
     }
 } 

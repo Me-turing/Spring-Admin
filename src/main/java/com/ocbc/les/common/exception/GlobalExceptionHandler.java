@@ -14,6 +14,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import jakarta.validation.ConstraintViolationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,6 +88,31 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.toList());
         return Result.fail(ResultCode.PARAM_ERROR, String.join(", ", errorMessages));
+    }
+
+    /**
+     * 处理参数校验异常
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleValidationException(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream()
+                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                .collect(Collectors.joining(", "));
+        return Result.fail(message);
+    }
+
+    /**
+     * 处理请求体解析异常
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String message = "请求参数格式错误";
+        if (e.getMessage() != null && e.getMessage().contains("Required request body is missing")) {
+            message = "请求体不能为空";
+        }
+        return Result.fail(message);
     }
 
     /**

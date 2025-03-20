@@ -1,7 +1,7 @@
 package com.ocbc.les.common.response;
 
+import com.ocbc.les.common.util.TraceIdUtils;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -11,7 +11,6 @@ import java.io.Serializable;
  * @param <T> 响应数据类型
  */
 @Data
-@NoArgsConstructor
 @Accessors(chain = true)
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -46,17 +45,18 @@ public class Result<T> implements Serializable {
      */
     private String traceId;
 
+    private Result() {
+        this.timestamp = System.currentTimeMillis();
+        this.traceId = TraceIdUtils.getTraceId();
+    }
+
     /**
      * 成功结果
      * @param <T> 数据类型
      * @return 成功的结果
      */
     public static <T> Result<T> success() {
-        return new Result<T>()
-                .setCode(ResultCode.SUCCESS)
-                .setMessage("操作成功")
-                .setSuccess(true)
-                .setTimestamp(System.currentTimeMillis());
+        return success(null);
     }
 
     /**
@@ -66,12 +66,12 @@ public class Result<T> implements Serializable {
      * @return 成功的结果
      */
     public static <T> Result<T> success(T data) {
-        return new Result<T>()
-                .setCode(ResultCode.SUCCESS)
-                .setMessage("操作成功")
-                .setData(data)
-                .setSuccess(true)
-                .setTimestamp(System.currentTimeMillis());
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("success");
+        result.setData(data);
+        result.setSuccess(true);
+        return result;
     }
 
     /**
@@ -86,8 +86,7 @@ public class Result<T> implements Serializable {
                 .setCode(ResultCode.SUCCESS)
                 .setMessage(message)
                 .setData(data)
-                .setSuccess(true)
-                .setTimestamp(System.currentTimeMillis());
+                .setSuccess(true);
     }
 
     /**
@@ -99,8 +98,7 @@ public class Result<T> implements Serializable {
         return new Result<T>()
                 .setCode(ResultCode.FAILURE)
                 .setMessage("操作失败")
-                .setSuccess(false)
-                .setTimestamp(System.currentTimeMillis());
+                .setSuccess(false);
     }
 
     /**
@@ -110,11 +108,7 @@ public class Result<T> implements Serializable {
      * @return 失败的结果
      */
     public static <T> Result<T> fail(String message) {
-        return new Result<T>()
-                .setCode(ResultCode.FAILURE)
-                .setMessage(message)
-                .setSuccess(false)
-                .setTimestamp(System.currentTimeMillis());
+        return fail(500, message);
     }
 
     /**
@@ -125,11 +119,11 @@ public class Result<T> implements Serializable {
      * @return 失败的结果
      */
     public static <T> Result<T> fail(Integer code, String message) {
-        return new Result<T>()
-                .setCode(code)
-                .setMessage(message)
-                .setSuccess(false)
-                .setTimestamp(System.currentTimeMillis());
+        Result<T> result = new Result<>();
+        result.setCode(code);
+        result.setMessage(message);
+        result.setSuccess(false);
+        return result;
     }
 
     /**
