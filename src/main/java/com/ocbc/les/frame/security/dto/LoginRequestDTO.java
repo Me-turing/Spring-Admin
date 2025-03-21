@@ -1,4 +1,4 @@
-package com.ocbc.les.modules.system.vo;
+package com.ocbc.les.modules.system.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "登录请求参数")
-public class LoginRequest {
+public class LoginRequestDTO {
 
     @Schema(description = "用户名", example = "admin", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "用户名不能为空")
