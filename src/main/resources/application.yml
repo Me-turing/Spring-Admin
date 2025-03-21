@@ -155,7 +155,7 @@ springdoc:
       paths-to-match: '/**'
       packages-to-scan: com.ocbc.les.modules
   show-actuator: true
-  packages-to-scan: com.ocbc.les.modules
+  packages-to-scan: com.ocbc.les
   paths-to-match: /**
   default-consumes-media-type: application/json
   default-produces-media-type: application/json

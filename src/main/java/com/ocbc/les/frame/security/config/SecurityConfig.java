@@ -1,9 +1,9 @@
 package com.ocbc.les.frame.security.config;
 
 import com.ocbc.les.frame.security.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,11 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final Sm4PasswordEncoder sm4PasswordEncoder;
 
-    @Autowired
-    private Sm4PasswordEncoder sm4PasswordEncoder;
+    public SecurityConfig(
+            @Lazy JwtAuthenticationFilter jwtAuthenticationFilter,
+            Sm4PasswordEncoder sm4PasswordEncoder) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.sm4PasswordEncoder = sm4PasswordEncoder;
+    }
 
     /**
      * 配置安全过滤器链

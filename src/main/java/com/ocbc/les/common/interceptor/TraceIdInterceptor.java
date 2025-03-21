@@ -1,6 +1,5 @@
 package com.ocbc.les.common.interceptor;
 
-import com.ocbc.les.common.util.RequestContextUtils;
 import com.ocbc.les.common.util.RequestLogUtils;
 import com.ocbc.les.common.util.RequestWrapper;
 import com.ocbc.les.common.util.TraceIdUtils;
