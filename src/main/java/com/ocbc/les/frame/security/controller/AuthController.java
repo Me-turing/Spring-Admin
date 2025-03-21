@@ -2,12 +2,13 @@ package com.ocbc.les.frame.security.controller;
 
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
+import com.ocbc.les.frame.security.dto.RefreshTokenRequest;
+import com.ocbc.les.frame.security.dto.TokenDTO;
 import com.ocbc.les.frame.security.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,22 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 认证控制器
  */
-@Slf4j
+@Tag(name = "认证管理", description = "认证相关接口")
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "认证管理", description = "用户认证相关接口")
+@RequiredArgsConstructor
 public class AuthController {
 
+    private final AuthService authService;
 
-    @Autowired
-    private AuthService authServiceImpl;
-
-    /**
-     * 用户登录
-     */
+    @Operation(summary = "登录", description = "用户登录获取token")
     @PostMapping("/login")
-    @Operation(summary = "用户登录", description = "用户登录接口,返回JWT token")
-    public Result<?> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
-        return authServiceImpl.getToken(loginRequest);
+    public Result<TokenDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
+        return Result.success(authService.login(loginRequest));
+    }
+
+    @Operation(summary = "刷新Token", description = "使用刷新令牌获取新的访问令牌")
+    @PostMapping("/refresh")
+    public Result<TokenDTO> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        return Result.success(authService.refreshToken(request));
     }
 } 
