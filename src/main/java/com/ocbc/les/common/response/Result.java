@@ -67,7 +67,7 @@ public class Result<T> implements Serializable {
      */
     public static <T> Result<T> success(T data) {
         Result<T> result = new Result<>();
-        result.setCode(200);
+        result.setCode(ResultCode.SUCCESS);
         result.setMessage("success");
         result.setData(data);
         result.setSuccess(true);
@@ -108,7 +108,7 @@ public class Result<T> implements Serializable {
      * @return 失败的结果
      */
     public static <T> Result<T> fail(String message) {
-        return fail(500, message);
+        return fail(ResultCode.FAILURE, message);
     }
 
     /**

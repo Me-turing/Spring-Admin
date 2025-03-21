@@ -2,12 +2,12 @@ package com.ocbc.les.modules.system.controller;
 
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.util.RequestContextUtils;
-import com.ocbc.les.frame.security.utils.JwtUtils;
 import com.ocbc.les.frame.security.config.Sm4PasswordEncoder;
-import com.ocbc.les.modules.system.dto.request.LoginRequest;
+import com.ocbc.les.frame.security.utils.JwtUtils;
 import com.ocbc.les.modules.system.entity.UserInfo;
 import com.ocbc.les.modules.system.service.UserInfoService;
 import com.ocbc.les.modules.system.service.impl.UserDetailsServiceImpl;
+import com.ocbc.les.modules.system.vo.LoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +15,10 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
