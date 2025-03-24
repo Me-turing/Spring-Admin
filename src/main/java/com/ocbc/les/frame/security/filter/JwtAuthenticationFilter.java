@@ -1,6 +1,8 @@
 package com.ocbc.les.frame.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocbc.les.common.exception.BusinessException;
+import com.ocbc.les.common.response.Result;
 import com.ocbc.les.frame.cache.entity.JwtCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
@@ -35,6 +37,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
+
+            if (request.getRequestURI().equals("/api/auth/login")) {
+                chain.doFilter(request, response);
+                return;
+            }
 
             if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 从Token中获取用户ID
@@ -79,12 +86,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     log.debug("无法从Token中获取用户ID");
                     throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
                 }
+            }else {
+                log.debug("没有携带Token,无法校验!");
+                throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "请先登录授权");
             }
         } catch (Exception e) {
             log.error("无法设置用户认证信息", e);
-            if (e instanceof BusinessException) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.getWriter().write(e.getMessage());
+
+            if (e instanceof BusinessException businessException) {
+                // 设置响应格式为JSON
+                response.setContentType("application/json;charset=UTF-8");
+                response.setStatus(businessException.getCode());
+
+                // 创建统一响应格式
+                Result<?> result = Result.fail(businessException.getCode(), businessException.getMessage());
+
+                // 使用Jackson将Result对象转换为JSON字符串
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(result);
+
+                // 写入响应
+                response.getWriter().write(jsonResponse);
+                return; // 结束过滤器链
+            } else {
+                // 处理其他异常
+                response.setContentType("application/json;charset=UTF-8");
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+                Result<?> result = Result.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统异常，请联系管理员");
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                String jsonResponse = objectMapper.writeValueAsString(result);
+
+                response.getWriter().write(jsonResponse);
+                return; // 结束过滤器链
             }
         }
 
