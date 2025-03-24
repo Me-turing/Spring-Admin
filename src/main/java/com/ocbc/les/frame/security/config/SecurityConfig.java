@@ -1,7 +1,9 @@
 package com.ocbc.les.frame.security.config;
 
+import com.ocbc.les.common.config.SecurityPathConfig;
 import com.ocbc.les.common.config.Sm4PasswordEncoder;
 import com.ocbc.les.frame.security.filter.JwtAuthenticationFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -13,10 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Spring Security配置类
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -37,6 +41,14 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // 获取不带上下文路径的放行路径数组
+        String[] permitAllPaths = SecurityPathConfig.getPermitAllPathsWithoutContext();
+        
+//        // 添加日志以确认实际使用的路径
+//        for (String path : permitAllPaths) {
+//            log.info("Security配置放行路径(不含上下文): {}", path);
+//        }
+        
         return http
             // 禁用CSRF
             .csrf(AbstractHttpConfigurer::disable)
@@ -44,16 +56,13 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 配置请求授权
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                // Knife4j接口文档
-                .requestMatchers("/doc.html").permitAll()
-                .requestMatchers("/webjars/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-resources/**").permitAll()
-                // Druid监控
-                .requestMatchers("/druid/**").permitAll()
-                .anyRequest().authenticated())
+            .authorizeHttpRequests(auth -> {
+                // 逐个添加放行路径，确保使用AntPathRequestMatcher
+                for (String path : permitAllPaths) {
+                    auth.requestMatchers(new AntPathRequestMatcher(path)).permitAll();
+                }
+                auth.anyRequest().authenticated();
+            })
             // 添加JWT过滤器
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

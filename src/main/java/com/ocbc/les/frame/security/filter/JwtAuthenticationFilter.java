@@ -1,6 +1,7 @@
 package com.ocbc.les.frame.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ocbc.les.common.config.SecurityPathConfig;
 import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.frame.cache.entity.JwtCache;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,19 +33,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final JwtCacheUtils jwtCacheUtils;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         try {
-            String jwt = getJwtFromRequest(request);
-
-            if (request.getRequestURI().equals("/api/auth/login")) {
+            // 检查请求路径是否在放行名单中
+            String requestPath = request.getRequestURI();
+            if (isPermitAllPath(requestPath)) {
+                log.debug("请求路径在放行名单中: {}", requestPath);
                 chain.doFilter(request, response);
                 return;
             }
+            
+            String jwt = getJwtFromRequest(request);
 
-            if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (jwt == null) {
+                log.debug("没有携带Token,无法校验!");
+                throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "请先登录授权");
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 从Token中获取用户ID
                 String loginId = jwtUtils.getUserIdFromToken(jwt);
                 
@@ -81,15 +92,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.debug("已认证用户ID: {}", loginId);
                     } else {
                         log.debug("Token验证失败或已过期, 用户ID: {}", loginId);
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
                     }
                 } else {
                     log.debug("无法从Token中获取用户ID");
                     throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
                 }
-            }else {
-                log.debug("没有携带Token,无法校验!");
-                throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "请先登录授权");
             }
+
         } catch (Exception e) {
             log.error("无法设置用户认证信息", e);
 
@@ -124,6 +134,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * 判断请求路径是否在放行名单中
+     * @param requestPath 请求路径
+     * @return 是否放行
+     */
+    private boolean isPermitAllPath(String requestPath) {
+        for (String pattern : SecurityPathConfig.getPermitAllPaths()) {
+            if (pathMatcher.match(pattern, requestPath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
