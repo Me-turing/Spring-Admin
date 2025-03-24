@@ -100,9 +100,9 @@ mybatis:
 # JWT配置
 jwt:
   secret: ocbc_les_risk_management_jwt_secret_key_2025  # JWT密钥
-  expiration: 3600000        # 访问令牌过期时间，1小时（毫秒）
-  refresh-expiration: 604800000  # 刷新令牌过期时间，7天（毫秒）
+  expiration: 36000        # 访问令牌过期时间，10小时（秒）
   issuer: ocbc-les-risk     # Token签发者
+  refresh: 300     # Token刷新时间窗口，5分钟（秒）
 
 # Knife4j配置（API文档增强）
 knife4j:

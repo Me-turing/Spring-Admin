@@ -1,18 +1,50 @@
 package com.ocbc.les.frame.cache.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
-public class JwtCacheInfo {
+@Builder
+@NoArgsConstructor  // 添加无参构造函数
+@AllArgsConstructor // 如果使用了@Builder,需要添加全参构造函数
+public class JwtCache {
     /**
      * 当前Token
      */
     private String token;
 
     /**
-     * 最后活跃时间
+     * 刷新时间
      */
-    private Date lastActiveTime;
+    private Long refreshTime;
+
+    /**
+     * 登录ID(用户ID)
+     */
+    private String userId;
+
+    /**
+     * 权限
+     */
+    private List<String> authorities;
+
+    /**
+     * 登录IP
+     */
+    private String loginIp;
+
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+
+    /**
+     * 过期时间
+     */
+    private Date expirationTime;
 }

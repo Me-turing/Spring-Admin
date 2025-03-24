@@ -1,5 +1,6 @@
 package com.ocbc.les.frame.security.config;
 
+import com.ocbc.les.common.config.Sm4PasswordEncoder;
 import com.ocbc.les.frame.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

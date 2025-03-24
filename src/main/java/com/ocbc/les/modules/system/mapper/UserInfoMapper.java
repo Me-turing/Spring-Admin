@@ -15,20 +15,11 @@ public interface UserInfoMapper {
     /**
      * 根据登录ID查询用户信息
      *
-     * @param loginId 登录ID
+     * @param userId 用户ID
      * @return 用户信息
      */
-    @Select("SELECT * FROM user_info WHERE login_id = #{loginId} AND del_flag = '0'")
-    UserInfo selectByLoginId(@Param("loginId") String loginId);
-    
-    /**
-     * 根据用户ID查询用户信息
-     *
-     * @param id 用户ID
-     * @return 用户信息
-     */
-    @Select("SELECT * FROM user_info WHERE id = #{id} AND del_flag = '0'")
-    UserInfo selectById(@Param("id") Long id);
+    @Select("SELECT * FROM user_info WHERE user_id = #{userId} AND del_flag = '0'")
+    UserInfo selectById(@Param("userId") String userId);
 
     /**
      * 更新用户信息

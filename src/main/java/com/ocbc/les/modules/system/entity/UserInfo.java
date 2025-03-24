@@ -15,9 +15,9 @@ public class UserInfo {
     private Long id;
 
     /**
-     * 登录ID
+     * 用户ID
      */
-    private String loginId;
+    private String userId;
 
     /**
      * 密码

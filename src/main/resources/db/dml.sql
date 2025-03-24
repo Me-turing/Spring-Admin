@@ -20,9 +20,9 @@ BEGIN TRY
     USING (VALUES 
         (N'admin', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'系统管理员', N'System Administrator', 4, N'0', N'admin', 4, N'超级管理员')
     ) AS source (login_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
-    ON target.login_id = source.login_id
+    ON target.user_id = source.login_id
     WHEN NOT MATCHED THEN
-        INSERT (login_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
+        INSERT (user_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
         VALUES (source.login_id, source.password, source.user_name_zh, source.user_name_en, source.org_id, source.status, source.create_by, source.create_org_id, source.remark);
 
     -- 使用MERGE语句插入角色数据

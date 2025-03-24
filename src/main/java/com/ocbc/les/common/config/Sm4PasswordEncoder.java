@@ -1,4 +1,4 @@
-package com.ocbc.les.frame.security.config;
+package com.ocbc.les.common.config;
 
 import com.ocbc.les.common.util.Sm4Utils;
 import org.springframework.beans.factory.annotation.Autowired;

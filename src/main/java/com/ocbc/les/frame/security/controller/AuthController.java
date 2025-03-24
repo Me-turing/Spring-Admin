@@ -2,9 +2,8 @@ package com.ocbc.les.frame.security.controller;
 
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
-import com.ocbc.les.frame.security.dto.RefreshTokenRequest;
-import com.ocbc.les.frame.security.dto.TokenDTO;
 import com.ocbc.les.frame.security.service.AuthService;
+import com.ocbc.les.frame.security.vo.TokenVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,13 +26,8 @@ public class AuthController {
 
     @Operation(summary = "登录", description = "用户登录获取token")
     @PostMapping("/login")
-    public Result<TokenDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    public Result<TokenVO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         return Result.success(authService.login(loginRequest));
     }
 
-    @Operation(summary = "刷新Token", description = "使用刷新令牌获取新的访问令牌")
-    @PostMapping("/refresh")
-    public Result<TokenDTO> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        return Result.success(authService.refreshToken(request));
-    }
 } 

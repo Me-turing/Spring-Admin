@@ -66,7 +66,7 @@ EXEC sp_addextendedproperty N'MS_Description', N'备注', N'SCHEMA', N'dbo', N'T
 -- 创建用户表
 CREATE TABLE user_info (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    login_id NVARCHAR(50) NOT NULL UNIQUE,
+    user_id NVARCHAR(50) NOT NULL UNIQUE,
     password NVARCHAR(100) NOT NULL,
     user_name_zh NVARCHAR(50),
     user_name_en NVARCHAR(50),
@@ -88,7 +88,7 @@ CREATE TABLE user_info (
 EXEC sp_addextendedproperty N'MS_Description', N'用户表', N'SCHEMA', N'dbo', N'TABLE', N'user_info';
 
 -- 添加列注释
-EXEC sp_addextendedproperty N'MS_Description', N'登录ID', N'SCHEMA', N'dbo', N'TABLE', N'user_info', N'COLUMN', N'login_id';
+EXEC sp_addextendedproperty N'MS_Description', N'登录ID', N'SCHEMA', N'dbo', N'TABLE', N'user_info', N'COLUMN', N'user_id';
 EXEC sp_addextendedproperty N'MS_Description', N'密码', N'SCHEMA', N'dbo', N'TABLE', N'user_info', N'COLUMN', N'password';
 EXEC sp_addextendedproperty N'MS_Description', N'中文名', N'SCHEMA', N'dbo', N'TABLE', N'user_info', N'COLUMN', N'user_name_zh';
 EXEC sp_addextendedproperty N'MS_Description', N'英文名', N'SCHEMA', N'dbo', N'TABLE', N'user_info', N'COLUMN', N'user_name_en';
@@ -274,7 +274,7 @@ EXEC sp_addextendedproperty N'MS_Description', N'创建者机构ID', N'SCHEMA', 
 EXEC sp_addextendedproperty N'MS_Description', N'创建时间', N'SCHEMA', N'dbo', N'TABLE', N'role_menu', N'COLUMN', N'create_time';
 
 -- 创建索引
-CREATE INDEX idx_user_info_login_id ON user_info(login_id);
+CREATE INDEX idx_user_info_login_id ON user_info(user_id);
 CREATE INDEX idx_user_info_org_id ON user_info(org_id);
 CREATE INDEX idx_role_info_role_key ON role_info(role_key);
 CREATE INDEX idx_permission_info_permission_key ON permission_info(permission_key);

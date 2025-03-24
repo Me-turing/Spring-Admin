@@ -4,7 +4,7 @@ import com.ocbc.les.modules.system.entity.UserInfo;
 import lombok.Data;
 
 @Data
-public class UserCacheInfo {
+public class UserDetailCache {
     /**
      * 用户详情
      */

@@ -1,5 +1,9 @@
 package com.ocbc.les.frame.security.filter;
 
+import com.ocbc.les.common.exception.BusinessException;
+import com.ocbc.les.frame.cache.entity.JwtCache;
+import com.ocbc.les.frame.cache.util.JwtCacheUtils;
+import com.ocbc.les.frame.security.config.CustomAuthentication;
 import com.ocbc.les.frame.security.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,15 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * JWT认证过滤器
@@ -26,7 +28,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-    private final UserDetailsService userDetailsService;
+    private final JwtCacheUtils jwtCacheUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -35,22 +37,55 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                String username = jwtUtils.getUsernameFromToken(jwt);
-
-                if (username != null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                    if (jwtUtils.validateToken(jwt, userDetails)) {
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        log.debug("Authenticated user: {}", username);
+                // 从Token中获取用户ID
+                String loginId = jwtUtils.getUserIdFromToken(jwt);
+                
+                if (loginId != null) {
+                    // 检查Token是否在黑名单中
+                    if (jwtCacheUtils.isBlackToken(jwt)) {
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token已失效");
                     }
+
+                    // 检查用户是否超时未活动
+                    if (jwtCacheUtils.checkActive(loginId)) {
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户长时间未活动,请重新登录");
+                    }
+
+                    // 从Redis中获取Token信息并验证
+                    JwtCache jwtCache = jwtCacheUtils.getJwt(loginId);
+                    if (jwtCache != null) {
+                        if (jwtCacheUtils.checkIpChange(loginId)) {
+                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户网路环境异常,请重新登陆");
+                        }
+
+                        if (jwtCacheUtils.checkTokenChange(loginId,jwt)) {
+                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户Token异常,请重新登陆");
+                        }
+
+                        // 从JWT中获取用户信息
+                        String userId = jwtUtils.getUserIdFromToken(jwt);
+                        String username = jwtUtils.getUsernameFromToken(jwt);
+                        List<String> authorities = jwtUtils.getAuthoritiesFromToken(jwt);
+
+                        CustomAuthentication customAuthentication = new CustomAuthentication(userId, username, null, authorities);
+                        jwtCacheUtils.renewJwt(loginId); //续期
+
+                        SecurityContextHolder.getContext().setAuthentication(customAuthentication);
+                        log.debug("已认证用户ID: {}", loginId);
+                    } else {
+                        log.debug("Token验证失败或已过期, 用户ID: {}", loginId);
+                    }
+                } else {
+                    log.debug("无法从Token中获取用户ID");
+                    throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication", e);
+            log.error("无法设置用户认证信息", e);
+            if (e instanceof BusinessException) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write(e.getMessage());
+            }
         }
 
         chain.doFilter(request, response);

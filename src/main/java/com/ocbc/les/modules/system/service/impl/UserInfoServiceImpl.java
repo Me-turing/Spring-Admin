@@ -16,13 +16,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserInfoMapper userInfoMapper;
 
     @Override
-    public UserInfo getUserByLoginId(String loginId) {
-        return userInfoMapper.selectByLoginId(loginId);
-    }
-
-    @Override
-    public UserInfo getUserById(Long id) {
-        return userInfoMapper.selectById(id);
+    public UserInfo getUserById(String loginId) {
+        return userInfoMapper.selectById(loginId);
     }
 
     @Override

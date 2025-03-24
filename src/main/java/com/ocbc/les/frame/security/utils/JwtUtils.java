@@ -1,19 +1,23 @@
 package com.ocbc.les.frame.security.utils;
 
+import com.ocbc.les.frame.security.config.CustomAuthentication;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * JWT工具类
@@ -22,37 +26,78 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
+    //JWT密钥
     @Value("${jwt.secret}")
     private String secret;
 
+    //JWT过期时间
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    @Value("${jwt.refresh-expiration}")
-    private Long refreshExpiration;
-
+    //JWt签发者
     @Value("${jwt.issuer}")
     private String issuer;
 
     /**
-     * 生成访问令牌
+     * 生成Token
      */
-    public String generateAccessToken(UserDetails userDetails) {
-        return generateToken(userDetails, expiration);
-    }
-
-    /**
-     * 生成刷新令牌
-     */
-    public String generateRefreshToken(UserDetails userDetails) {
-        return generateToken(userDetails, refreshExpiration);
+    public String generateToken(CustomAuthentication customAuthentication) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", customAuthentication.getUserId());
+        claims.put("userName", customAuthentication.getName());
+        // 将用户权限添加到claims中
+        List<String> authorities = customAuthentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
+        claims.put("authorities", authorities);
+        
+        return doGenerateToken(claims, customAuthentication.getUsername());
     }
 
     /**
      * 从Token中获取用户名
      */
     public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            return claims.get("userName", String.class);
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().get("userName", String.class);
+        } catch (Exception e) {
+            log.error("无法从Token中获取用户名称", e);
+            return null;
+        }
+    }
+
+    /**
+     * 从Token中获取用户ID
+     */
+    public String getUserIdFromToken(String token) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            return claims.get("userId", String.class);
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().get("userId", String.class);
+        } catch (Exception e) {
+            log.error("无法从Token中获取用户ID", e);
+            return null;
+        }
+    }
+
+    /**
+     * 从Token中获取权限列表
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> getAuthoritiesFromToken(String token) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            return (List<String>) claims.get("authorities");
+        } catch (ExpiredJwtException e) {
+            return (List<String>) e.getClaims().get("authorities");
+        } catch (Exception e) {
+            log.error("无法从Token中获取权限信息", e);
+            return List.of();
+        }
     }
 
     /**
@@ -63,6 +108,13 @@ public class JwtUtils {
     }
 
     /**
+     * 获取Token创建时间
+     */
+    public Date getIssuedAtDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getIssuedAt);
+    }
+
+    /**
      * 获取Token剩余有效期（秒）
      */
     public long getTokenRemainingTime(String token) {
@@ -70,36 +122,9 @@ public class JwtUtils {
         return (expiration.getTime() - System.currentTimeMillis()) / 1000;
     }
 
-    /**
-     * 验证Token
-     */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    /**
-     * 检查Token是否需要刷新
-     * 如果剩余时间小于过期时间的20%，则需要刷新
-     */
-    public boolean shouldTokenBeRefreshed(String token) {
-        try {
-            final Date expiration = getExpirationDateFromToken(token);
-            long remainingTime = expiration.getTime() - System.currentTimeMillis();
-            return remainingTime < (this.expiration * 0.2);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String generateToken(UserDetails userDetails, long expiration) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername(), expiration);
-    }
-
-    private String doGenerateToken(Map<String, Object> claims, String subject, long expiration) {
+    private String doGenerateToken(Map<String, Object> claims, String subject) {
         final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + expiration);
+        final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -120,13 +145,12 @@ public class JwtUtils {
     }
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
-    }
-
-    public Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        try {
+            final Claims claims = getAllClaimsFromToken(token);
+            return claimsResolver.apply(claims);
+        } catch (ExpiredJwtException e) {
+            return claimsResolver.apply(e.getClaims());
+        }
     }
 
     private Key getSigningKey() {

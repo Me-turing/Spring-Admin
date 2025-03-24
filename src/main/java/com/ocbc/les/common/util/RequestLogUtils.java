@@ -100,7 +100,7 @@ public class RequestLogUtils {
     /**
      * 获取当前请求
      */
-    private static HttpServletRequest getRequest() {
+    public static HttpServletRequest getRequest() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return attributes != null ? attributes.getRequest() : null;
     }

@@ -1,4 +1,4 @@
-package com.ocbc.les.frame.security.dto;
+package com.ocbc.les.frame.security.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 @Schema(description = "Token响应DTO")
-public class TokenDTO {
+public class TokenVO {
     
     @Schema(description = "访问令牌")
     private String accessToken;
