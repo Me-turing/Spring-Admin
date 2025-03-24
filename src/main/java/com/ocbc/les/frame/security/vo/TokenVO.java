@@ -14,13 +14,8 @@ public class TokenDTO {
     
     @Schema(description = "访问令牌")
     private String accessToken;
-    
-    @Schema(description = "刷新令牌")
-    private String refreshToken;
-    
+
     @Schema(description = "访问令牌过期时间(秒)")
     private Long accessTokenExpireIn;
-    
-    @Schema(description = "刷新令牌过期时间(秒)")
-    private Long refreshTokenExpireIn;
+
 } 
