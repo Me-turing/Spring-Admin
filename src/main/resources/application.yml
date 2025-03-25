@@ -137,10 +137,10 @@ knife4j:
   cors: false
   production: false
   security:
-    - name: Authorization
+    - name: Bearer
       type: apiKey
       in: header
-      description: JWT认证信息
+      description: 输入Bearer {token}格式的JWT认证信息
 
 # SpringDoc配置（OpenAPI文档）
 springdoc:

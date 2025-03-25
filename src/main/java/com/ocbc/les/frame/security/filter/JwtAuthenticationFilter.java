@@ -47,25 +47,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
             
-            String jwt = getJwtFromRequest(request);
+            String tokenStr = getJwtFromRequest(request);
 
-            if (jwt == null) {
+            if (tokenStr == null) {
                 log.debug("没有携带Token,无法校验!");
                 throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "请先登录授权");
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 从Token中获取用户ID
-                String loginId = jwtUtils.getUserIdFromToken(jwt);
+                String loginId = jwtUtils.getUserIdFromToken(tokenStr);
                 
                 if (loginId != null) {
                     // 检查Token是否在黑名单中
-                    if (jwtCacheUtils.isBlackToken(jwt)) {
+                    if (jwtCacheUtils.isBlackToken(tokenStr)) {
                         throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token已失效");
                     }
 
                     // 检查用户是否超时未活动
                     if (jwtCacheUtils.checkActive(loginId)) {
+                        jwtCacheUtils.removeJwt(loginId);//退出用户缓存
                         throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户长时间未活动,请重新登录");
                     }
 
@@ -73,17 +74,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     JwtCache jwtCache = jwtCacheUtils.getJwt(loginId);
                     if (jwtCache != null) {
                         if (jwtCacheUtils.checkIpChange(loginId)) {
+                            jwtCacheUtils.removeJwt(loginId);//退出用户缓存
                             throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户网路环境异常,请重新登陆");
                         }
 
-                        if (jwtCacheUtils.checkTokenChange(loginId,jwt)) {
+                        if (jwtCacheUtils.checkTokenChange(loginId,tokenStr)) {
                             throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户Token异常,请重新登陆");
                         }
 
                         // 从JWT中获取用户信息
-                        String userId = jwtUtils.getUserIdFromToken(jwt);
-                        String username = jwtUtils.getUsernameFromToken(jwt);
-                        List<String> authorities = jwtUtils.getAuthoritiesFromToken(jwt);
+                        String userId = jwtUtils.getUserIdFromToken(tokenStr);
+                        String username = jwtUtils.getUsernameFromToken(tokenStr);
+                        List<String> authorities = jwtUtils.getAuthoritiesFromToken(tokenStr);
 
                         CustomAuthentication customAuthentication = new CustomAuthentication(userId, username, null, authorities);
                         jwtCacheUtils.renewJwt(loginId); //续期
