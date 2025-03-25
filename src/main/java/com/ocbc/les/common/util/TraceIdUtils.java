@@ -9,8 +9,8 @@ import java.util.UUID;
  */
 public class TraceIdUtils {
     
-    private static final String TRACE_ID = "traceId";
-    private static final String USER_ID = "userId";
+    public static final String TRACE_ID = "traceId";
+    public static final String USER_ID = "userId";
     
     /**
      * 生成traceId
@@ -54,4 +54,5 @@ public class TraceIdUtils {
         MDC.remove(TRACE_ID);
         MDC.remove(USER_ID);
     }
+
 } 

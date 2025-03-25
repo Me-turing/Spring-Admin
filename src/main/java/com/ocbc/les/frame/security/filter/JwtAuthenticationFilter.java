@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocbc.les.common.config.SecurityPathConfig;
 import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.common.response.Result;
+import com.ocbc.les.common.util.TraceIdUtils;
 import com.ocbc.les.frame.cache.entity.JwtCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
@@ -91,6 +92,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         jwtCacheUtils.renewJwt(loginId); //续期
 
                         SecurityContextHolder.getContext().setAuthentication(customAuthentication);
+                        // 设置用户ID到MDC中，用于日志输出
+                        TraceIdUtils.setUserId(userId);
                         log.debug("已认证用户ID: {}", loginId);
                     } else {
                         log.debug("Token验证失败或已过期, 用户ID: {}", loginId);
