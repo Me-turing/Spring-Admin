@@ -12,8 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
 
+    private final UserInfoMapper userInfoMapper;
     @Autowired
-    private UserInfoMapper userInfoMapper;
+    public UserInfoServiceImpl(UserInfoMapper userInfoMapper) {
+        this.userInfoMapper = userInfoMapper;
+    }
 
     @Override
     public UserInfo getUserById(String loginId) {
@@ -24,4 +27,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     public void updateUser(UserInfo userInfo) {
         userInfoMapper.updateById(userInfo);
     }
-} 
+
+    @Override
+    public void addUser(UserInfo userInfo) {
+        userInfoMapper.addUser(userInfo);
+    }
+}

@@ -1,11 +1,16 @@
 package com.ocbc.les.modules.system.controller;
 
 import com.ocbc.les.common.response.Result;
+import com.ocbc.les.modules.system.entity.UserInfo;
+import com.ocbc.les.modules.system.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
 
 /**
  * 测试控制器
@@ -14,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/test")
 public class TestController {
+    private final UserInfoService userInfoServiceImpl;
+    @Autowired
+    public TestController(UserInfoService userInfoServiceImpl) {
+        this.userInfoServiceImpl = userInfoServiceImpl;
+    }
 
     /**
      * 测试接口
@@ -24,5 +34,23 @@ public class TestController {
     @GetMapping("/hello")
     public Result<String> hello() {
         return Result.success("Hello, OCBC Risk Management System!");
+    }
+
+    @Operation(summary = "测试新增用户接口", description = "测试用户新增")
+    @GetMapping("/addUserTest")
+    public Result<?> addUserTest(){
+        UserInfo userInfo = UserInfo.builder()
+                .userId("test001")
+                .password("xxxxxx")
+                .userNameEn("En")
+                .userNameZh("Zh")
+                .orgId(1L)
+                .status("1")
+                .lastLoginTime(LocalDateTime.now())
+                .lastLoginIp("127.0.0.1")
+                .delFlag("0")
+                .build();
+        userInfoServiceImpl.addUser(userInfo);
+        return Result.success();
     }
 }
