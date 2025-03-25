@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (loginId != null) {
                     // 检查Token是否在黑名单中
                     if (jwtCacheUtils.isBlackToken(tokenStr)) {
-                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token已失效");
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证已失效,请重新登录");
                     }
 
                     // 检查用户是否超时未活动
@@ -97,11 +97,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.debug("已认证用户ID: {}", loginId);
                     } else {
                         log.debug("Token验证失败或已过期, 用户ID: {}", loginId);
-                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证失败或已过期");
                     }
                 } else {
                     log.debug("无法从Token中获取用户ID");
-                    throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Token验证失败或已过期");
+                    throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证失败或已过期");
                 }
             }
 
