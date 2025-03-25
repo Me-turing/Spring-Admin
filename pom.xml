@@ -20,7 +20,7 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <mybatis-spring-boot.version>3.0.3</mybatis-spring-boot.version>
+        <mybatis-plus.version>3.5.11</mybatis-plus.version>
         <mssql-jdbc.version>12.8.1.jre11</mssql-jdbc.version>
         <springdoc-openapi.version>2.6.0</springdoc-openapi.version>
         <jjwt.version>0.11.5</jjwt.version>
@@ -38,9 +38,9 @@
         
         <!-- Spring Boot 数据库依赖 -->
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis-spring-boot.version}</version>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>

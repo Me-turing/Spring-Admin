@@ -1,6 +1,7 @@
 package com.ocbc.les.common.util;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -137,25 +138,26 @@ public class RequestContextUtils {
             Object auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null) {
                 log.debug(MessageUtils.getMessage("log.auth.empty"));
-                return "";
+                throw new BusinessException(MessageUtils.getMessage("system.unauthorized"));
             }
-            
+
             // 检查认证对象类型
             if (!(auth instanceof CustomAuthentication)) {
                 log.debug(MessageUtils.getMessage("log.auth.typemismatch", auth.getClass().getName()));
-                return "";
+                throw new BusinessException(MessageUtils.getMessage("system.unauthorized"));
             }
-            
+
             CustomAuthentication authentication = (CustomAuthentication) auth;
             if (ObjectUtil.isNotEmpty(authentication)){
                 userId = authentication.getUserId();
                 log.debug(MessageUtils.getMessage("log.auth.success", userId));
             } else {
                 log.debug(MessageUtils.getMessage("log.auth.empty.custom"));
+                throw new BusinessException(MessageUtils.getMessage("system.unauthorized"));
             }
         } catch (Exception e) {
             log.error(MessageUtils.getMessage("log.auth.exception", e.getMessage()), e);
-            return "";
+            throw new BusinessException(MessageUtils.getMessage("system.unauthorized"));
         }
         return userId;
     }
