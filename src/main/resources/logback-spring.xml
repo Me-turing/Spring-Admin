@@ -12,25 +12,6 @@
         </encoder>
     </appender>
 
-    <!-- 系统日志输出 - 按用户ID区分文件夹 -->
-    <appender name="USER_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!-- 设置文件路径，使用MDC中的userId -->
-        <file>${LOG_PATH}/%X{userId:-system}/system.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- 按日期和大小滚动，压缩 -->
-            <fileNamePattern>${LOG_PATH}/%X{userId:-system}/system.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <!-- 单个文件最大20MB -->
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <!-- 保留30天 -->
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <!-- 所有归档文件总大小限制 -->
-            <totalSizeCap>5GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
     <!-- 系统日志输出 - 所有日志汇总 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/system.log</file>
@@ -62,21 +43,51 @@
         </encoder>
     </appender>
 
-    <!-- 用户错误日志输出 - 按用户ID区分 -->
-    <appender name="USER_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/%X{userId:-system}/error.log</file>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%X{userId:-system}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-            <maxHistory>${MAX_HISTORY}</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
+    <!-- 按用户ID分类的日志输出 -->
+    <appender name="USER_SIFTING" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>userId</key>
+            <defaultValue>system</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${userId}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_PATH}/${userId}/system.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/${userId}/system.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                    <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+                    <maxHistory>${MAX_HISTORY}</maxHistory>
+                    <totalSizeCap>5GB</totalSizeCap>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>${LOG_PATTERN}</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <!-- 按用户ID分类的错误日志输出 -->
+    <appender name="USER_ERROR_SIFTING" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>userId</key>
+            <defaultValue>system</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="ERROR-FILE-${userId}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_PATH}/${userId}/error.log</file>
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                    <level>ERROR</level>
+                </filter>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/${userId}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                    <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+                    <maxHistory>${MAX_HISTORY}</maxHistory>
+                    <totalSizeCap>2GB</totalSizeCap>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>${LOG_PATTERN}</pattern>
+                </encoder>
+            </appender>
+        </sift>
     </appender>
 
     <!-- 开发环境 -->
@@ -84,9 +95,9 @@
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
-            <appender-ref ref="USER_FILE"/>
             <appender-ref ref="ERROR_FILE"/>
-            <appender-ref ref="USER_ERROR_FILE"/>
+            <appender-ref ref="USER_SIFTING"/>
+            <appender-ref ref="USER_ERROR_SIFTING"/>
         </root>
     </springProfile>
 
@@ -94,9 +105,9 @@
     <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="FILE"/>
-            <appender-ref ref="USER_FILE"/>
             <appender-ref ref="ERROR_FILE"/>
-            <appender-ref ref="USER_ERROR_FILE"/>
+            <appender-ref ref="USER_SIFTING"/>
+            <appender-ref ref="USER_ERROR_SIFTING"/>
         </root>
     </springProfile>
 </configuration> 
