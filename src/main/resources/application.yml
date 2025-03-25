@@ -111,6 +111,7 @@ jwt:
   expiration: 36000        # 访问令牌过期时间，10小时（秒）
   issuer: ocbc-les-risk     # Token签发者
   refresh: 300     # Token刷新时间窗口，5分钟（秒）
+  threshold: 0.8 #本地与Redis同步阈值,通过刷新时间计算
 
 # Knife4j配置（API文档增强）
 knife4j:

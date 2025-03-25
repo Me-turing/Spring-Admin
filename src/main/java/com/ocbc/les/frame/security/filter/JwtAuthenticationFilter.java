@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 // 从Token中获取用户ID
                 String loginId = jwtUtils.getUserIdFromToken(tokenStr);
                 
@@ -76,7 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     // 从Redis中获取Token信息并验证
                     JwtCache jwtCache = jwtCacheUtils.getJwt(loginId);
-                    if (jwtCache != null) {
+                    if (jwtCache != null && !jwtUtils.isTokenExpired(tokenStr)) {  // 缓存中存在Token 且 未过期
                         if (jwtCacheUtils.checkIpChange(loginId)) {
                             log.debug(MessageUtils.getMessage("log.user.ipchange"));
                             jwtCacheUtils.removeJwt(loginId);//退出用户缓存

@@ -55,6 +55,9 @@ public class JwtCacheUtils {
     @Value("${jwt.refresh}")
     private Long refreshTime;
 
+    @Value("${jwt.threshold}")
+    private Double threshold;
+
     //JWT前缀
     private static final String JWT_KEY_PREFIX = "les:jwt:";
     //黑名单
@@ -91,6 +94,9 @@ public class JwtCacheUtils {
         if (ObjectUtil.isEmpty(jwtCache)){
             //尝试从云端获取
             jwtCache = (JwtCache) redisUtils.get(JWT_KEY_PREFIX+userId);
+            if (ObjectUtil.isNotEmpty(jwtCache)){
+                putJwt(userId,jwtCache); // 本地同步
+            }
         }
         return jwtCache ;
     }
@@ -182,15 +188,34 @@ public class JwtCacheUtils {
     }
 
     /**
-     * 给Token续期更新
+     * 给Token续期更新 : 此处需要根据配置项中的阈值来判断是否同步云端,否则只同步在本地
      * @param userId 用户ID
      */
     public void renewJwt(String userId){
         JwtCache jwt = getJwt(userId);
         if (ObjectUtil.isNotEmpty(jwt)){
             jwt.setRefreshTime(System.currentTimeMillis() + refreshTime*1000);
+            updateJwt(userId,jwt);
         }
-        putJwt(userId,jwt);
+    }
+
+    /**
+     * 更新Jwt : 此处需要根据配置项中的阈值来判断是否同步云端,否则只同步在本地
+     * @param userId
+     * @param jwtCache
+     */
+    public void updateJwt(String userId, JwtCache jwtCache){
+        JwtCache jwt = getJwt(userId);
+        threshold = threshold > 1.0 ? 1.0 : threshold < 0.0 ? 0.0 :threshold;
+        if (ObjectUtil.isNotEmpty(jwt)){
+            //在本地存放
+            userLocalCache.put(userId, jwtCache);
+            if ((jwt.getRefreshTime()-System.currentTimeMillis()) <= refreshTime * 1000 * ( 1 - threshold)){
+                //云端同步
+                long remainingExpiration = redisUtils.getExpire(JWT_KEY_PREFIX + userId);
+                redisUtils.set(JWT_KEY_PREFIX+userId,jwtCache,remainingExpiration);
+            }
+        }
     }
 
 } 

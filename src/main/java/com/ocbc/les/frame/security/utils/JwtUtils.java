@@ -123,6 +123,25 @@ public class JwtUtils {
         return (expiration.getTime() - System.currentTimeMillis()) / 1000;
     }
 
+    /**
+     * 检查Token是否过期
+     * @param token JWT Token
+     * @return true:已过期 false:未过期
+     */
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = getExpirationDateFromToken(token);
+            boolean expired = expiration.before(new Date());
+            if (expired) {
+                log.warn(MessageUtils.getMessage("log.token.expired"), token);
+            }
+            return expired;
+        } catch (Exception e) {
+            log.error(MessageUtils.getMessage("system.servererror"), e);
+            return true;
+        }
+    }
+
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         final Date createdDate = new Date();
         final Date expirationDate = new Date(createdDate.getTime() + expiration * 1000);
