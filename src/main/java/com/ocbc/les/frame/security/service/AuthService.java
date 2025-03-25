@@ -13,4 +13,10 @@ public interface AuthService {
      */
     TokenVO login(LoginRequestDTO loginRequest);
 
+    /**
+     * 用户登出
+     * @param requestUserId
+     * @return
+     */
+    void logout(String requestUserId);
 }

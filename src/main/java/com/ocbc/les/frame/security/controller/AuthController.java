@@ -1,6 +1,8 @@
 package com.ocbc.les.frame.security.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.ocbc.les.common.response.Result;
+import com.ocbc.les.common.util.RequestContextUtils;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
 import com.ocbc.les.frame.security.service.AuthService;
 import com.ocbc.les.frame.security.vo.TokenVO;
@@ -8,10 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 认证控制器
@@ -30,4 +29,14 @@ public class AuthController {
         return Result.success(authService.login(loginRequest));
     }
 
+
+    @Operation(summary = "登出", description = "用户登录获取token")
+    @GetMapping("/logout")
+    public Result<?> logout() {
+        String requestUserId = RequestContextUtils.getRequestUserId();
+        if (StrUtil.isNotEmpty(requestUserId)){
+            authService.logout(requestUserId);
+        }
+        return Result.success("登出成功!");
+    }
 } 

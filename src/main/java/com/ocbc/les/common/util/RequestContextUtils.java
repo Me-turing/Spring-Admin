@@ -1,6 +1,10 @@
 package com.ocbc.les.common.util;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.ocbc.les.frame.security.config.CustomAuthentication;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -11,6 +15,7 @@ import java.util.Map;
 /**
  * 请求上下文工具类
  */
+@Slf4j
 public class RequestContextUtils {
     private static final String UNKNOWN = "unknown";
     private static final String[] IP_HEADERS = {
@@ -118,6 +123,41 @@ public class RequestContextUtils {
             return "";
         }
         return request.getQueryString();
+    }
+
+
+    /**
+     * 通过JWT获取当前请求的用户
+     * @return 用户ID
+     */
+    public static String getRequestUserId(){
+        String userId = "";
+        try {
+            // 获取认证对象
+            Object auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null) {
+                log.debug("认证对象为空，无法获取用户ID");
+                return "";
+            }
+            
+            // 检查认证对象类型
+            if (!(auth instanceof CustomAuthentication)) {
+                log.debug("认证对象类型不匹配: {}", auth.getClass().getName());
+                return "";
+            }
+            
+            CustomAuthentication authentication = (CustomAuthentication) auth;
+            if (ObjectUtil.isNotEmpty(authentication)){
+                userId = authentication.getUserId();
+                log.debug("成功获取用户ID: {}", userId);
+            } else {
+                log.debug("CustomAuthentication对象为空");
+            }
+        } catch (Exception e) {
+            log.error("获取用户ID时发生异常", e);
+            return "";
+        }
+        return userId;
     }
 
     /**

@@ -78,4 +78,13 @@ public class AuthServiceImpl implements AuthService {
                 .accessTokenExpireIn(jwtUtils.getTokenRemainingTime(accessToken))
                 .build();
     }
+
+    @Override
+    public void logout(String requestUserId) {
+        try {
+            jwtCacheUtils.removeJwt(requestUserId);
+        } catch (Exception e) {
+            throw new BusinessException("登出失败,请联系管理员");
+        }
+    }
 }

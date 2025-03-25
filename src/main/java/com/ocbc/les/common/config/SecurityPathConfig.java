@@ -32,7 +32,7 @@ public class SecurityPathConfig {
         
         // 定义基础路径数组（不包含上下文路径）
         String[] basePaths = {
-            "/auth/**",           // 认证相关接口
+            "/auth/login",           // 认证相关接口
             "/doc.html",          // Knife4j接口文档
             "/webjars/**",        // Swagger相关资源
             "/v3/api-docs/**",    // OpenAPI文档
