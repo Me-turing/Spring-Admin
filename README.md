@@ -8,9 +8,9 @@ xxxxxxxxxxxxxxxxxxx
 
 - 后端框架: Spring Boot 3.0.0
 - 安全框架: Spring Security + JWT
-- 持久层框架: MyBatis
+- 持久层框架: MyBatis-Plus
 - 数据库: SQLServer 2022
-- 缓存: Redis
+- 缓存: Redis + Caffeine
 - API文档: Knife4j
 - 项目管理: Maven
 
@@ -20,6 +20,7 @@ xxxxxxxxxxxxxxxxxxx
 - 系统管理
 - 审计日志
 - 性能监控
+- 多级缓存
 
 ## 开发进度
 
@@ -38,6 +39,11 @@ xxxxxxxxxxxxxxxxxxx
   - 全局异常处理
   - 操作日志记录
   - 接口文档生成
+- [x] 缓存优化
+  - Caffeine本地缓存
+  - Redis分布式缓存
+  - 多级缓存架构
+  - 缓存监控
 
 ### 进行中功能
 - [ ] 审计日志模块
@@ -45,9 +51,9 @@ xxxxxxxxxxxxxxxxxxx
   - 登录日志记录
   - 审计追踪
 - [ ] 性能优化
-  - Redis缓存集成
   - 数据库优化
   - 接口性能优化
+  - 缓存策略优化
 
 ### 待开发功能
 - [ ] 规则引擎模块
@@ -69,8 +75,8 @@ xxxxxxxxxxxxxxxxxxx
    - 解决方案: 完善Spring Security配置,细化权限控制
 
 3. 缓存问题
-   - 问题: Redis缓存未完全集成
-   - 解决方案: 实现多级缓存架构
+   - 问题: 缓存策略需要优化
+   - 解决方案: 实现多级缓存架构,优化缓存策略
 
 ## 设计文档
 
@@ -176,6 +182,10 @@ risk-management/
 │   │   │       │   ├── redis/             # Redis相关
 │   │   │       │   │   ├── config/                  # Redis配置
 │   │   │       │   │   └── service/                 # Redis服务
+│   │   │       │   ├── cache/             # 缓存相关
+│   │   │       │   │   ├── config/        # 缓存配置
+│   │   │       │   │   └── entity/        # 缓存实体
+│   │   │       │   │   └── util/          # 缓存工具
 │   │   │       │   └── mybatis/           # MyBatis相关
 │   │   │       │       ├── config/                  # MyBatis配置
 │   │   │       │       └── service/                 # MyBatis服务
@@ -231,6 +241,7 @@ risk-management/
    - SecurityConfig: 安全配置类
    - SwaggerConfig: Swagger配置类
    - WebConfig: Web配置类
+   - CacheConfig: 缓存配置类
 
 2. 异常处理(exception)
    - GlobalExceptionHandler: 全局异常处理器
@@ -240,14 +251,17 @@ risk-management/
    - JwtUtil: JWT工具类
    - RedisUtil: Redis工具类
    - SecurityUtil: 安全工具类
+   - CacheUtil: 缓存工具类
 
 4. 切面(aspect)
    - LogAspect: 日志切面
    - SecurityAspect: 安全切面
+   - CacheAspect: 缓存切面
 
 5. 注解(annotation)
    - Log: 日志注解
    - Security: 安全注解
+   - Cache: 缓存注解
 
 6. 响应结构(response)
    - Result: 统一响应对象
@@ -263,7 +277,12 @@ risk-management/
    - config: Redis配置
    - service: Redis服务
 
-3. MyBatis框架(mybatis)
+3. 缓存框架(cache)
+   - config: 缓存配置
+   - entity: 缓存实体
+   - util: 缓存工具
+
+4. MyBatis框架(mybatis)
    - config: MyBatis配置
    - service: MyBatis服务
 
@@ -291,6 +310,7 @@ risk-management/
 - 遵循阿里巴巴Java开发手册
 - 使用统一的代码格式化工具
 - 保持代码简洁清晰
+- 合理使用缓存提升性能
 
 ### 命名规范
 
@@ -300,12 +320,14 @@ risk-management/
 - 常量名: 使用UPPER_SNAKE_CASE
 - 包名: 使用小写字母
 - 数据库表名: 使用snake_case
+- 缓存key: 使用冒号分隔的字符串
 
 ### 注释规范
 
 - 类注释: 说明类的功能、作者、日期
 - 方法注释: 说明方法的功能、参数、返回值
 - 关键代码注释: 说明代码的作用和实现逻辑
+- 缓存注释: 说明缓存的用途、过期时间、更新策略
 
 ## 部署说明
 
@@ -326,6 +348,7 @@ mvn clean package -DskipTests
    - 修改application-prod.yml
    - 配置数据库连接
    - 配置Redis连接
+   - 配置缓存参数
 
 3. 启动应用
 ```bash
@@ -340,6 +363,7 @@ java -jar risk-management.jar
 - JWT配置
 - 日志配置
 - 安全配置
+- 缓存配置
 
 ## 接口文档
 
