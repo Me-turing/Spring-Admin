@@ -3,6 +3,7 @@ package com.ocbc.les.frame.security.controller;
 import cn.hutool.core.util.StrUtil;
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.util.RequestContextUtils;
+import com.ocbc.les.common.util.MessageUtils;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
 import com.ocbc.les.frame.security.service.AuthService;
 import com.ocbc.les.frame.security.vo.TokenVO;
@@ -26,7 +27,7 @@ public class AuthController {
     @Operation(summary = "登录", description = "用户登录获取token")
     @PostMapping("/login")
     public Result<TokenVO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
-        return Result.success(authService.login(loginRequest));
+        return Result.success(MessageUtils.getMessage("auth.login.success"), authService.login(loginRequest));
     }
 
 
@@ -37,6 +38,6 @@ public class AuthController {
         if (StrUtil.isNotEmpty(requestUserId)){
             authService.logout(requestUserId);
         }
-        return Result.success("登出成功!");
+        return Result.success(MessageUtils.getMessage("auth.logout.success"));
     }
 } 

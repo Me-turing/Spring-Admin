@@ -1,6 +1,7 @@
 package com.ocbc.les.common.response;
 
 import com.ocbc.les.common.util.TraceIdUtils;
+import com.ocbc.les.common.util.MessageUtils;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -68,7 +69,7 @@ public class Result<T> implements Serializable {
     public static <T> Result<T> success(T data) {
         Result<T> result = new Result<>();
         result.setCode(ResultCode.SUCCESS);
-        result.setMessage("success");
+        result.setMessage(MessageUtils.getMessage("system.success"));
         result.setData(data);
         result.setSuccess(true);
         return result;
@@ -95,10 +96,7 @@ public class Result<T> implements Serializable {
      * @return 失败的结果
      */
     public static <T> Result<T> fail() {
-        return new Result<T>()
-                .setCode(ResultCode.FAILURE)
-                .setMessage("操作失败")
-                .setSuccess(false);
+        return fail(ResultCode.FAILURE, MessageUtils.getMessage("system.error"));
     }
 
     /**
@@ -118,12 +116,32 @@ public class Result<T> implements Serializable {
      * @param <T> 数据类型
      * @return 失败的结果
      */
-    public static <T> Result<T> fail(Integer code, String message) {
-        Result<T> result = new Result<>();
-        result.setCode(code);
-        result.setMessage(message);
-        result.setSuccess(false);
-        return result;
+    public static <T> Result<T> fail(int code, String message) {
+        return new Result<T>()
+                .setCode(code)
+                .setMessage(message)
+                .setSuccess(false);
+    }
+
+    /**
+     * 根据消息代码获取失败结果
+     * @param messageCode 消息代码
+     * @param <T> 数据类型
+     * @return 失败的结果
+     */
+    public static <T> Result<T> failWithCode(String messageCode) {
+        return fail(ResultCode.FAILURE, MessageUtils.getMessage(messageCode));
+    }
+
+    /**
+     * 根据消息代码和参数获取失败结果
+     * @param messageCode 消息代码
+     * @param args 参数
+     * @param <T> 数据类型
+     * @return 失败的结果
+     */
+    public static <T> Result<T> failWithCode(String messageCode, Object... args) {
+        return fail(ResultCode.FAILURE, MessageUtils.getMessage(messageCode, args));
     }
 
     /**

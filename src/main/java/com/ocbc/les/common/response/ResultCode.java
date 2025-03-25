@@ -1,52 +1,51 @@
 package com.ocbc.les.common.response;
 
 /**
- * 响应状态码常量
+ * 响应状态码
  */
-public interface ResultCode {
+public class ResultCode {
     /**
-     * 操作成功
+     * 成功
      */
-    int SUCCESS = 200;
+    public static final int SUCCESS = 200;
 
     /**
-     * 操作失败
+     * 失败
      */
-    int FAILURE = 500;
-
-    /**
-     * 参数错误
-     */
-    int PARAM_ERROR = 400;
+    public static final int FAILURE = 500;
 
     /**
      * 未授权
      */
-    int UNAUTHORIZED = 401;
+    public static final int UNAUTHORIZED = 401;
 
     /**
      * 禁止访问
      */
-    int FORBIDDEN = 403;
+    public static final int FORBIDDEN = 403;
 
     /**
-     * 资源不存在
+     * 不存在
      */
-    int NOT_FOUND = 404;
+    public static final int NOT_FOUND = 404;
 
     /**
-     * 参数校验失败
+     * 请求参数错误
      */
-    int VALIDATION_FAILED = 422;
+    public static final int BAD_REQUEST = 400;
 
     /**
-     * 请求频率超限
+     * 冲突
      */
-    int TOO_MANY_REQUESTS = 429;
+    public static final int CONFLICT = 409;
 
     /**
-     * 服务不可用
+     * 请求参数验证失败
      */
-    int SERVICE_UNAVAILABLE = 503;
+    public static final int VALIDATE_FAILED = 422;
 
+    /**
+     * 请求过多
+     */
+    public static final int TOO_MANY_REQUESTS = 429;
 } 

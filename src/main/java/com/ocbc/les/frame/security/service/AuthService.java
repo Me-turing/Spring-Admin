@@ -1,5 +1,6 @@
 package com.ocbc.les.frame.security.service;
 
+import com.ocbc.les.common.response.Result;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
 import com.ocbc.les.frame.security.vo.TokenVO;
 
@@ -18,5 +19,5 @@ public interface AuthService {
      * @param requestUserId
      * @return
      */
-    void logout(String requestUserId);
+    Result<?> logout(String requestUserId);
 }

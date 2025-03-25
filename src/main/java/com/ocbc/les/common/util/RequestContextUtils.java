@@ -136,25 +136,25 @@ public class RequestContextUtils {
             // 获取认证对象
             Object auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null) {
-                log.debug("认证对象为空，无法获取用户ID");
+                log.debug(MessageUtils.getMessage("log.auth.empty"));
                 return "";
             }
             
             // 检查认证对象类型
             if (!(auth instanceof CustomAuthentication)) {
-                log.debug("认证对象类型不匹配: {}", auth.getClass().getName());
+                log.debug(MessageUtils.getMessage("log.auth.typemismatch", auth.getClass().getName()));
                 return "";
             }
             
             CustomAuthentication authentication = (CustomAuthentication) auth;
             if (ObjectUtil.isNotEmpty(authentication)){
                 userId = authentication.getUserId();
-                log.debug("成功获取用户ID: {}", userId);
+                log.debug(MessageUtils.getMessage("log.auth.success", userId));
             } else {
-                log.debug("CustomAuthentication对象为空");
+                log.debug(MessageUtils.getMessage("log.auth.empty.custom"));
             }
         } catch (Exception e) {
-            log.error("获取用户ID时发生异常", e);
+            log.error(MessageUtils.getMessage("log.auth.exception", e.getMessage()), e);
             return "";
         }
         return userId;

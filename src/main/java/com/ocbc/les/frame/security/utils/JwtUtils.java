@@ -1,5 +1,6 @@
 package com.ocbc.les.frame.security.utils;
 
+import com.ocbc.les.common.util.MessageUtils;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -64,7 +65,7 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return e.getClaims().get("userName", String.class);
         } catch (Exception e) {
-            log.error("无法从Token中获取用户名称", e);
+            log.error(MessageUtils.getMessage("log.token.nousername"), e);
             return null;
         }
     }
@@ -79,7 +80,7 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return e.getClaims().get("userId", String.class);
         } catch (Exception e) {
-            log.error("无法从Token中获取用户ID", e);
+            log.error(MessageUtils.getMessage("log.token.nouserid"), e);
             return null;
         }
     }
@@ -95,7 +96,7 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return (List<String>) e.getClaims().get("authorities");
         } catch (Exception e) {
-            log.error("无法从Token中获取权限信息", e);
+            log.error(MessageUtils.getMessage("log.token.nouserauthorities"), e);
             return List.of();
         }
     }

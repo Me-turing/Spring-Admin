@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- 导入属性文件 -->
+    <property resource="config/messages.properties" />
+    
     <property name="LOG_PATH" value="logs"/>
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{userId}][%X{traceId}] %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{userId}][%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="MAX_FILE_SIZE" value="20MB"/>
     <property name="MAX_HISTORY" value="30"/>
 

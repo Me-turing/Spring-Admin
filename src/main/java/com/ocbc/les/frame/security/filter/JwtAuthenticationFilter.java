@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocbc.les.common.config.SecurityPathConfig;
 import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.common.response.Result;
+import com.ocbc.les.common.util.MessageUtils;
 import com.ocbc.les.common.util.TraceIdUtils;
 import com.ocbc.les.frame.cache.entity.JwtCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
@@ -43,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 检查请求路径是否在放行名单中
             String requestPath = request.getRequestURI();
             if (isPermitAllPath(requestPath)) {
-                log.debug("请求路径在放行名单中: {}", requestPath);
+                log.debug(MessageUtils.getMessage("log.path.permit"), requestPath);
                 chain.doFilter(request, response);
                 return;
             }
@@ -51,8 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String tokenStr = getJwtFromRequest(request);
 
             if (tokenStr == null) {
-                log.debug("没有携带Token,无法校验!");
-                throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "请先登录授权");
+                log.debug(MessageUtils.getMessage("log.token.missing"));
+                throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("system.unauthorized"));
             }
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -62,25 +63,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (loginId != null) {
                     // 检查Token是否在黑名单中
                     if (jwtCacheUtils.isBlackToken(tokenStr)) {
-                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证已失效,请重新登录");
+                        log.debug(MessageUtils.getMessage("log.token.blacklist"));
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.tokeninvalid"));
                     }
 
                     // 检查用户是否超时未活动
                     if (jwtCacheUtils.checkActive(loginId)) {
+                        log.debug(MessageUtils.getMessage("log.user.inactive"));
                         jwtCacheUtils.removeJwt(loginId);//退出用户缓存
-                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户长时间未活动,请重新登录");
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.inactive"));
                     }
 
                     // 从Redis中获取Token信息并验证
                     JwtCache jwtCache = jwtCacheUtils.getJwt(loginId);
                     if (jwtCache != null) {
                         if (jwtCacheUtils.checkIpChange(loginId)) {
+                            log.debug(MessageUtils.getMessage("log.user.ipchange"));
                             jwtCacheUtils.removeJwt(loginId);//退出用户缓存
-                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户网路环境异常,请重新登陆");
+                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.ipchange"));
                         }
 
                         if (jwtCacheUtils.checkTokenChange(loginId,tokenStr)) {
-                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "用户Token异常,请重新登陆");
+                            log.debug(MessageUtils.getMessage("log.token.mismatch"));
+                            throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.tokeninvalid"));
                         }
 
                         // 从JWT中获取用户信息
@@ -94,20 +99,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(customAuthentication);
                         // 设置用户ID到MDC中，用于日志输出
                         TraceIdUtils.setUserId(userId);
-                        log.debug("已认证用户ID: {}", loginId);
+                        log.debug(MessageUtils.getMessage("log.auth.success", loginId));
                     } else {
-                        log.debug("Token验证失败或已过期, 用户ID: {}", loginId);
-                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证失败或已过期");
+                        log.debug(MessageUtils.getMessage("log.token.expired", loginId));
+                        throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.expired"));
                     }
                 } else {
-                    log.debug("无法从Token中获取用户ID");
-                    throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "认证失败或已过期");
+                    log.debug(MessageUtils.getMessage("log.token.nouserid"));
+                    throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), MessageUtils.getMessage("auth.login.tokeninvalid"));
                 }
             }
 
         } catch (Exception e) {
-            log.error("无法设置用户认证信息", e);
-
+            log.debug(e.getMessage(),e);
             if (e instanceof BusinessException businessException) {
                 // 设置响应格式为JSON
                 response.setContentType("application/json;charset=UTF-8");
@@ -128,7 +132,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.setContentType("application/json;charset=UTF-8");
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-                Result<?> result = Result.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统异常，请联系管理员");
+                Result<?> result = Result.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), MessageUtils.getMessage("system.servererror"));
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 String jsonResponse = objectMapper.writeValueAsString(result);

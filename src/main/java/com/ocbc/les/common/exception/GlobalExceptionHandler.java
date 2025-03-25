@@ -2,6 +2,7 @@ package com.ocbc.les.common.exception;
 
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.response.ResultCode;
+import com.ocbc.les.common.util.MessageUtils;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -12,15 +13,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 全局异常处理
@@ -46,7 +42,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result<?> handleAccessDeniedException(AccessDeniedException e) {
         log.error("权限不足: {}", e.getMessage(), e);
-        return Result.fail(ResultCode.FORBIDDEN, "权限不足，无法访问该资源");
+        return Result.fail(ResultCode.FORBIDDEN, MessageUtils.getMessage("system.forbidden"));
     }
 
     /**
@@ -56,9 +52,9 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result<?> handleAuthenticationException(AuthenticationException e) {
         log.error("认证异常: {}", e.getMessage(), e);
-        String message = "认证失败";
+        String message = MessageUtils.getMessage("system.unauthorized");
         if (e instanceof BadCredentialsException) {
-            message = "用户名或密码错误";
+            message = MessageUtils.getMessage("auth.login.wrongcredentials");
         }
         return Result.fail(ResultCode.UNAUTHORIZED, message);
     }
@@ -70,12 +66,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("参数校验异常: {}", e.getMessage(), e);
-        BindingResult bindingResult = e.getBindingResult();
-        List<String> errorMessages = bindingResult.getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
-        return Result.fail(ResultCode.PARAM_ERROR, String.join(", ", errorMessages));
+        return Result.fail(ResultCode.BAD_REQUEST, MessageUtils.getMessage("system.badrequest"));
     }
 
     /**
@@ -85,12 +76,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<?> handleBindException(BindException e) {
         log.error("参数绑定异常: {}", e.getMessage(), e);
-        BindingResult bindingResult = e.getBindingResult();
-        List<String> errorMessages = bindingResult.getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
-        return Result.fail(ResultCode.PARAM_ERROR, String.join(", ", errorMessages));
+        return Result.fail(ResultCode.BAD_REQUEST, MessageUtils.getMessage("system.badrequest"));
     }
 
     /**
@@ -99,10 +85,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleValidationException(ConstraintViolationException e) {
-        String message = e.getConstraintViolations().stream()
-                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                .collect(Collectors.joining(", "));
-        return Result.fail(message);
+        log.error("处理参数校验异常: {}", e.getMessage(), e);
+        return Result.fail(ResultCode.VALIDATE_FAILED, MessageUtils.getMessage("system.badrequest"));
     }
 
     /**
@@ -111,11 +95,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        String message = "请求参数格式错误";
-        if (e.getMessage() != null && e.getMessage().contains("Required request body is missing")) {
-            message = "请求体不能为空";
-        }
-        return Result.fail(message);
+        log.error("处理请求体解析异常: {}", e.getMessage(), e);
+        return Result.fail(ResultCode.FAILURE,MessageUtils.getMessage("system.badrequest"));
     }
 
     /**
@@ -125,6 +106,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<?> handleException(Exception e) {
         log.error("系统异常: {}", e.getMessage(), e);
-        return Result.fail(ResultCode.FAILURE, "系统异常，请联系管理员");
+        return Result.fail(ResultCode.FAILURE, MessageUtils.getMessage("system.servererror"));
     }
 } 

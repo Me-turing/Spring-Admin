@@ -3,6 +3,8 @@ package com.ocbc.les.frame.security.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.ocbc.les.common.config.Sm4PasswordEncoder;
 import com.ocbc.les.common.exception.BusinessException;
+import com.ocbc.les.common.response.Result;
+import com.ocbc.les.common.util.MessageUtils;
 import com.ocbc.les.common.util.RequestContextUtils;
 import com.ocbc.les.frame.cache.entity.JwtCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
@@ -36,12 +38,12 @@ public class AuthServiceImpl implements AuthService {
         // 加载用户信息
         UserInfo userInfo = userInfoService.getUserById(loginRequest.getUserId());
         if (ObjectUtil.isEmpty(userInfo)) {
-            throw new BusinessException("用户名或密码错误");
+            throw new BusinessException(MessageUtils.getMessage("auth.login.wrongcredentials"));
         }
 
         // 判断用户状态
         if (!"0".equals(userInfo.getStatus())) {
-            throw new BusinessException("用户已被禁用");
+            throw new BusinessException(MessageUtils.getMessage("auth.login.disabled"));
         }
 
         // 返回UserDetails对象
@@ -50,9 +52,9 @@ public class AuthServiceImpl implements AuthService {
         CustomAuthentication customAuthentication = new CustomAuthentication(userInfo.getUserId(), userInfo.getUserNameZh(), userInfo.getPassword(), roleList);
 
 
-        // 验证密码
+        // 验证密码 TODO: 注意当前使用的是明文
         if (!sm4PasswordEncoder.matches(loginRequest.getPassword(), customAuthentication.getPassword())) {
-            throw new BusinessException("用户名或密码错误");
+            throw new BusinessException(MessageUtils.getMessage("auth.login.wrongcredentials"));
         }
 
         // 更新用户最后登录信息
@@ -61,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
             userInfo.setLastLoginIp(RequestContextUtils.getIpAddress());
             userInfoService.updateUser(userInfo);
         } catch (Exception e) {
-            log.error("更新用户登录信息失败", e);
+            log.error(MessageUtils.getMessage("user.update.error"), e);
             // 不影响登录流程,继续执行
         }
 
@@ -80,11 +82,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(String requestUserId) {
-        try {
-            jwtCacheUtils.removeJwt(requestUserId);
-        } catch (Exception e) {
-            throw new BusinessException("登出失败,请联系管理员");
-        }
+    public Result<?> logout(String requestUserId) {
+        jwtCacheUtils.removeJwt(requestUserId);
+        return Result.success(MessageUtils.getMessage("auth.logout.success"));
     }
 }

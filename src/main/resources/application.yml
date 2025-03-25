@@ -164,11 +164,11 @@ springdoc:
 # 日志配置
 logging:
   level:
-    root: info                          # 根日志级别
-    com.ocbc.les: info                  # 应用日志级别
-    org.springframework.web: info       # Spring Web日志级别
-    org.springframework.security: info  # Spring Security日志级别
-    org.mybatis: info                   # MyBatis日志级别
+    root: debug                          # 根日志级别
+    com.ocbc.les: debug                  # 应用日志级别
+    org.springframework.web: debug       # Spring Web日志级别
+    org.springframework.security: debug  # Spring Security日志级别
+    org.mybatis: debug                   # MyBatis日志级别
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"  # 控制台日志格式
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"     # 文件日志格式
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{userId}][%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{userId}][%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"
