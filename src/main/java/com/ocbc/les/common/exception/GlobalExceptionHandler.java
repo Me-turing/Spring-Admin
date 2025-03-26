@@ -102,6 +102,16 @@ public class GlobalExceptionHandler {
     /**
      * 处理其他异常
      */
+    @ExceptionHandler(TypeConversionException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result<?> typeConversionException(Exception e) {
+        log.error("类型转换异常: {}", e.getMessage(), e);
+        return Result.fail(ResultCode.FAILURE, MessageUtils.getMessage("system.servererror"));
+    }
+
+    /**
+     * 处理其他异常
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<?> handleException(Exception e) {
