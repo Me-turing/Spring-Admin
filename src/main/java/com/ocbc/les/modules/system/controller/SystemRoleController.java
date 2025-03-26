@@ -4,6 +4,7 @@ import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.util.RequestContextUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Tag(name = "角色管理", description = "只要用于系统角色的管理")
 @RestController
+@Slf4j
 @RequestMapping("/role")
 public class SystemRoleController {
 
@@ -20,7 +22,6 @@ public class SystemRoleController {
     @GetMapping("/get-user-role")
     public Result<?> getUserRole() {
         String requestUserId = RequestContextUtils.getRequestUserId();
-
         return Result.success("Hello, OCBC Risk Management System!");
     }
 }

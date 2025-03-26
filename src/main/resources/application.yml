@@ -159,7 +159,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html              # Swagger UI路径
     tags-sorter: alpha                  # 标签排序方式
-    operations-sorter: alpha            # 操作排序方式
+    operations-sorter: order            # 操作排序方式
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
@@ -181,3 +181,36 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{userId}][%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{userId}][%X{traceId}] [%thread] %-5level %logger{36} - %msg%n"
+
+# 事务管理配置
+transaction:
+  monitor:
+    enabled: true  # 是否启用事务监控
+  prefix:
+    readonly:  # 只读事务方法前缀
+      - get
+      - query
+      - find
+      - list
+      - count
+      - exist
+      - search
+      - fetch
+      - select
+    required:  # 读写事务方法前缀
+      - add
+      - save
+      - insert
+      - update
+      - modify
+      - delete
+      - remove
+      - batch
+      - create
+      - import
+      - export
+      - submit
+      - process
+      - execute
+    none:  # 无事务方法前缀，可根据需要自定义
+      - noTx

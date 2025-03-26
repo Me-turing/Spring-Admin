@@ -12,7 +12,7 @@ import java.io.IOException;
  * 请求包装过滤器
  */
 @Component
-@Order(1)
+@Order(50)
 public class RequestWrapperFilter implements Filter {
 
     @Override
