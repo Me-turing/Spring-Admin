@@ -2,68 +2,84 @@
 
 ## 项目介绍
 
-xxxxxxxxxxxxxxxxxxx
+ 基于Spring boot 3 的后端管理系统
 
 ### 技术栈
 
-- 后端框架: Spring Boot 3.0.0
-- 安全框架: Spring Security + JWT
-- 持久层框架: MyBatis-Plus
-- 数据库: SQLServer 2022
-- 缓存: Redis + Caffeine
-- API文档: Knife4j
-- 项目管理: Maven
+- 后端框架: Spring Boot 3.3.2
+- 安全框架: Spring Security + JWT 0.11.5
+- 持久层框架: MyBatis-Plus 3.5.11
+- 数据库: SQLServer 2022 (JDBC 12.8.1)
+- 数据库连接池: Druid 1.2.24
+- 缓存: Redis 6.0 + Caffeine 3.1.8(二级缓存)
+- API文档: Knife4j 4.5.0
+- 开发工具: 
+  - Lombok
+  - Spring Boot DevTools
+  - Hutool 5.8.16
+- 加密工具: BouncyCastle 1.69
+- 工具库: Google Guava 32.1.3-jre
+- 项目管理: Maven 3.8+
 
 ### 主要功能
 
 - 用户认证与授权
+- 权限管理
 - 系统管理
 - 审计日志
-- 性能监控
-- 多级缓存
+- 系统监控
 
 ## 开发进度
 
 ### 已完成功能
 - [x] 项目基础框架搭建
 - [x] 用户认证与授权模块
-  - JWT token认证
-  - 基于角色的权限控制
-  - 自定义密码加密(SM4)
+   - JWT token认证
+   - 基于角色的权限控制
+   - 自定义密码加密(SM4)
 - [x] 系统管理模块
-  - 用户管理
-  - 角色管理
-  - 菜单管理
+   - 用户管理
+   - 角色管理
+   - 菜单管理
 - [x] 基础功能
-  - 统一响应处理
-  - 全局异常处理
-  - 操作日志记录
-  - 接口文档生成
+   - 统一响应处理
+   - 全局异常处理
+   - 操作日志记录
+   - 接口文档生成
 - [x] 缓存优化
   - Caffeine本地缓存
   - Redis分布式缓存
   - 多级缓存架构
-  - 缓存监控
 
 ### 进行中功能
-- [ ] 审计日志模块
-  - 操作日志记录
-  - 登录日志记录
-  - 审计追踪
-- [ ] 性能优化
-  - 数据库优化
-  - 接口性能优化
-  - 缓存策略优化
+- [ ] Mybatis Plus 拓展
+    - 类型转换器
+    - 自定义ID注入(分布式ID的实现)
+- [ ] 接口权限
+    - 根据客户权限配置表,控制用户对接口的访问权限
+- [ ] 框架优化
+    - 暴露全局自动事务
 
 ### 待开发功能
-- [ ] 规则引擎模块
-  - 规则配置界面
-  - 规则执行引擎
-  - 规则版本管理
-- [ ] 监控告警模块
-  - 系统监控
-  - 性能监控
-  - 告警配置
+- [ ] 接口级审计日志
+    - 操作日志记录
+    - 登录日志记录
+    - 审计追踪
+- [ ] 缓存管理
+    - 多资源缓存同步通知(清空/同步)
+    - 码值表的缓存添加
+    - 用户详情的缓存添加(菜单/角色)
+- [ ] 认证完善
+    - OAuth2的部分设计(对接其他系统)
+- [ ] API补充
+    - OAuth2的部分设计(对接其他系统)
+    - 根据当前登录用户获取可选择的角色
+    - 获取用户选择的角色,更新缓存中的使用角色
+    - 根据角色获取用户可见菜单
+    - 用户管理CRUD / 密码重置与修改  / 用户禁用与启用
+    - 菜单管理CRUD / 禁用启用
+    - 角色管理CRUD / 禁用启用
+    - 权限管理CRUD / 禁用启用
 
 ### 已知问题
 1. 密码加密问题
@@ -142,192 +158,185 @@ mvn spring-boot:run
 
 ```
 risk-management/
-├── docs/                           # 项目文档
-│   ├── architecture.md             # 系统架构设计
-│   ├── database.md                 # 数据库设计
-│   ├── api.md                      # 接口设计
-│   ├── security.md                 # 安全设计
-│   └── performance.md              # 性能设计
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/ocbc/les/
-│   │   │       ├── common/                # 公共组件
-│   │   │       │   ├── config/            # 全局配置
-│   │   │       │   │   ├── RedisConfig.java          # Redis配置
-│   │   │       │   │   ├── SecurityConfig.java       # 安全配置
-│   │   │       │   │   ├── SwaggerConfig.java        # Swagger配置
-│   │   │       │   │   └── WebConfig.java            # Web配置
-│   │   │       │   ├── exception/         # 异常处理
-│   │   │       │   │   ├── GlobalExceptionHandler.java  # 全局异常处理
-│   │   │       │   │   └── BusinessException.java       # 业务异常
-│   │   │       │   ├── util/              # 工具类
-│   │   │       │   │   ├── JwtUtil.java              # JWT工具类
-│   │   │       │   │   ├── RedisUtil.java           # Redis工具类
-│   │   │       │   │   └── SecurityUtil.java        # 安全工具类
-│   │   │       │   ├── aspect/            # 切面
-│   │   │       │   │   ├── LogAspect.java           # 日志切面
-│   │   │       │   │   └── SecurityAspect.java      # 安全切面
-│   │   │       │   ├── annotation/        # 注解
-│   │   │       │   │   ├── Log.java                 # 日志注解
-│   │   │       │   │   └── Security.java            # 安全注解
-│   │   │       │   └── response/          # 响应结构
-│   │   │       │       ├── Result.java              # 统一响应对象
-│   │   │       │       └── ResultCode.java          # 响应码
-│   │   │       ├── frame/                 # 框架功能
-│   │   │       │   ├── security/          # 安全相关
-│   │   │       │   │   ├── filter/                  # 过滤器
-│   │   │       │   │   ├── handler/                 # 处理器
-│   │   │       │   │   └── service/                 # 安全服务
-│   │   │       │   ├── redis/             # Redis相关
-│   │   │       │   │   ├── config/                  # Redis配置
-│   │   │       │   │   └── service/                 # Redis服务
-│   │   │       │   ├── cache/             # 缓存相关
-│   │   │       │   │   ├── config/        # 缓存配置
-│   │   │       │   │   └── entity/        # 缓存实体
-│   │   │       │   │   └── util/          # 缓存工具
-│   │   │       │   └── mybatis/           # MyBatis相关
-│   │   │       │       ├── config/                  # MyBatis配置
-│   │   │       │       └── service/                 # MyBatis服务
-│   │   │       └── modules/               # 业务模块
-│   │   │           ├── system/            # 系统管理
-│   │   │           │   ├── controller/             # 控制器
-│   │   │           │   ├── service/                # 服务层
-│   │   │           │   ├── mapper/                 # 数据访问层
-│   │   │           │   ├── entity/                 # 实体类
-│   │   │           │   ├── dto/                    # 数据传输对象
-│   │   │           │   └── vo/                     # 视图对象
-│   │   │           └── risk/              # 风险管理
-│   │   │               ├── controller/             # 控制器
-│   │   │               ├── service/                # 服务层
-│   │   │               ├── mapper/                 # 数据访问层
-│   │   │               ├── entity/                 # 实体类
-│   │   │               ├── dto/                    # 数据传输对象
-│   │   │               └── vo/                     # 视图对象
-│   │   └── resources/
-│   │       ├── application.yml            # 主配置文件
-│   │       ├── application-dev.yml        # 开发环境配置
-│   │       ├── application-test.yml       # 测试环境配置
-│   │       ├── application-prod.yml       # 生产环境配置
-│   │       ├── mapper/                    # MyBatis映射文件
-│   │       │   ├── system/                # 系统模块映射
-│   │       │   └── risk/                  # 风险模块映射
-│   │       └── static/                    # 静态资源
-│   └── test/                              # 测试目录
-│       ├── java/                          # 测试代码
-│       └── resources/                     # 测试资源
-├── scripts/                               # 脚本目录
-│   ├── sql/                              # SQL脚本
-│   │   ├── schema.sql                    # 表结构
-│   │   └── data.sql                      # 初始数据
-│   └── deploy/                           # 部署脚本
-│       ├── start.sh                      # 启动脚本
-│       └── stop.sh                       # 停止脚本
-├── pom.xml                               # Maven配置
-└── README.md                             # 项目说明
+├── src/ # 源代码目录
+│ ├── main/ # 主代码目录
+│ │ ├── java/ # Java源代码
+│ │ │ └── com/ocbc/les/ # 基础包路径
+│ │ │ ├── common/ # 公共组件层
+│ │ │ │ ├── annotation/ # 自定义注解
+│ │ │ │ │ ├── field # 自动注入注入类型注解
+│ │ │ │ │ └── id # 自定义主键注解
+│ │ │ │ ├── config/ # 全局配置
+│ │ │ │ │ ├── MybatisPlusConfig.java # MyBatis-Plus配置
+│ │ │ │ │ ├── MessageConfig.java # 消息配置
+│ │ │ │ │ ├── SecurityPathConfig.java # 安全路径配置
+│ │ │ │ │ ├── WebMvcConfig.java # Web MVC配置
+│ │ │ │ │ ├── RedisConfig.java # Redis配置
+│ │ │ │ │ ├── Sm4PasswordEncoder.java # SM4密码编码器
+│ │ │ │ │ └── RemoveDruidAdConfig.java # Druid广告移除配置
+│ │ │ │ ├── constant/ # 常量定义
+│ │ │ │ ├── exception/ # 异常处理
+│ │ │ │ ├── filter/ # 过滤器
+│ │ │ │ ├── interceptor/ # 拦截器
+│ │ │ │ ├── response/ # 统一响应
+│ │ │ │ └── util/ # 工具类
+│ │ │ ├── frame/ # 框架功能层
+│ │ │ │ ├── cache/ # 缓存框架
+│ │ │ │ │ ├── entity/ # 缓存实体
+│ │ │ │ │ └── util/ # 缓存工具
+│ │ │ │ ├── handler/ # 处理器
+│ │ │ │ │ ├── changetype/ # 类型转换
+│ │ │ │ │ └── AutoFillHandler.java # 自动填充处理器
+│ │ │ │ ├── security/ # 安全框架
+│ │ │ │ │ ├── config/ # 安全配置
+│ │ │ │ │ ├── controller/ # 安全控制器
+│ │ │ │ │ ├── dto/ # 数据传输对象
+│ │ │ │ │ ├── filter/ # 安全过滤器
+│ │ │ │ │ ├── service/ # 安全服务
+│ │ │ │ │ ├── utils/ # 安全工具
+│ │ │ │ │ └── vo/ # 视图对象
+│ │ │ │ └── swagger/ # API文档
+│ │ │ ├── modules/ # 业务模块层
+│ │ │ │ ├── system/ # 系统管理模块
+│ │ │ │ │ ├── controller/ # 控制器
+│ │ │ │ │ ├── service/ # 服务层
+│ │ │ │ │ ├── mapper/ # 数据访问层
+│ │ │ │ │ ├── entity/ # 实体类
+│ │ │ │ │ ├── dto/ # 数据传输对象
+│ │ │ │ │ └── vo/ # 视图对象
+│ │ │ │ └── risk/ # 风险管理模块(待开发)
+│ │ │ └── RiskManagementApplication.java # 应用启动类
+│ │ └── resources/ # 资源文件目录
+│ │ ├── application.yml # 主配置文件
+│ │ ├── application-dev.yml # 开发环境配置
+│ │ ├── config/ # 配置目录
+│ │ ├── db/ # 数据库相关脚本
+│ │ └── com/ # MyBatis映射文件
+│ └── test/ # 测试代码目录
+├── doc/ # 项目文档
+├── logs/ # 日志目录
+├── scripts/ # 脚本目录
+├── target/ # 编译输出目录
+├── .idea/ # IDE配置目录
+├── .git/ # Git版本控制目录
+├── TODO # 待办事项
+├── .gitignore # Git忽略文件
+├── .cursorrules # Cursor IDE规则文件
+├── pom.xml # Maven配置
+└── README.md # 项目说明
 ```
 
 ## 框架文件说明
 
-### 配置文件
-- application.yml: 主配置文件,包含基础配置
-- application-dev.yml: 开发环境配置
-- application-test.yml: 测试环境配置
-- application-prod.yml: 生产环境配置
+1. 公共组件(common)
+   - annotation: 自定义注解
+   - config: 全局配置类
+     - MybatisPlusConfig: MyBatis-Plus配置
+     - MessageConfig: 消息配置
+     - SecurityPathConfig: 安全路径配置
+     - WebMvcConfig: Web MVC配置
+     - RedisConfig: Redis配置
+     - Sm4PasswordEncoder: SM4密码编码器
+   - constant: 常量定义
+   - exception: 异常处理
+   - filter: 过滤器
+   - interceptor: 拦截器
+   - response: 统一响应结构
+   - util: 工具类
 
-### 公共组件
-1. 全局配置(config)
-   - RedisConfig: Redis配置类
-   - SecurityConfig: 安全配置类
-   - SwaggerConfig: Swagger配置类
-   - WebConfig: Web配置类
-   - CacheConfig: 缓存配置类
+2. 框架功能(frame)
+   - cache: 缓存框架
+     - entity: 缓存实体
+     - util: 缓存工具
+   - handler: 数据处理器
+     - changetype: 类型转换器
+     - AutoFillHandler: 自动填充处理器
+   - security: 安全框架
+     - config: 安全配置
+     - controller: 安全控制器
+     - dto: 数据传输对象
+     - filter: 安全过滤器
+     - service: 安全服务
+     - utils: 安全工具
+     - vo: 视图对象
+   - swagger: API文档配置
 
-2. 异常处理(exception)
-   - GlobalExceptionHandler: 全局异常处理器
-   - BusinessException: 业务异常类
+3. 业务模块(modules)
+   - system: 系统管理模块
+     - controller: 控制器层
+     - service: 服务层
+     - mapper: 数据访问层
+     - entity: 实体类
+     - dto: 数据传输对象
+     - vo: 视图对象
+   - risk: 风险管理模块(待开发)
 
-3. 工具类(util)
-   - JwtUtil: JWT工具类
-   - RedisUtil: Redis工具类
-   - SecurityUtil: 安全工具类
-   - CacheUtil: 缓存工具类
-
-4. 切面(aspect)
-   - LogAspect: 日志切面
-   - SecurityAspect: 安全切面
-   - CacheAspect: 缓存切面
-
-5. 注解(annotation)
-   - Log: 日志注解
-   - Security: 安全注解
-   - Cache: 缓存注解
-
-6. 响应结构(response)
-   - Result: 统一响应对象
-   - ResultCode: 响应码
-
-### 框架功能
-1. 安全框架(security)
-   - filter: 安全过滤器
-   - handler: 安全处理器
-   - service: 安全服务
-
-2. Redis框架(redis)
-   - config: Redis配置
-   - service: Redis服务
-
-3. 缓存框架(cache)
-   - config: 缓存配置
-   - entity: 缓存实体
-   - util: 缓存工具
-
-4. MyBatis框架(mybatis)
-   - config: MyBatis配置
-   - service: MyBatis服务
-
-### 业务模块
-1. 系统管理(system)
-   - controller: 控制器层
-   - service: 服务层
-   - mapper: 数据访问层
-   - entity: 实体类
-   - dto: 数据传输对象
-   - vo: 视图对象
-
-2. 风险管理(risk)
-   - controller: 控制器层
-   - service: 服务层
-   - mapper: 数据访问层
-   - entity: 实体类
-   - dto: 数据传输对象
-   - vo: 视图对象
+4. 资源文件(resources)
+   - application.yml: 主配置文件
+   - application-dev.yml: 开发环境配置
+   - config: 配置目录
+   - db: 数据库相关脚本
+   - com: MyBatis映射文件
 
 ## 开发规范
 
 ### 代码规范
 
-- 遵循阿里巴巴Java开发手册
-- 使用统一的代码格式化工具
-- 保持代码简洁清晰
-- 合理使用缓存提升性能
+- 遵循阿里巴巴Java开发手册(最新版)
+- 使用统一的代码格式化工具(推荐IntelliJ IDEA默认格式)
+- 保持代码简洁清晰,避免复杂嵌套和冗长方法
+- 合理使用设计模式,但避免过度设计
+- 单元测试覆盖率不低于70%
+- 合理使用缓存提升性能,避免缓存穿透和雪崩
+- 使用统一的日志格式,关键操作必须记录日志
+- 异常必须处理或向上抛出,禁止捕获异常后不处理
 
 ### 命名规范
 
-- 类名: 使用PascalCase
-- 方法名: 使用camelCase
-- 变量名: 使用camelCase
-- 常量名: 使用UPPER_SNAKE_CASE
-- 包名: 使用小写字母
-- 数据库表名: 使用snake_case
-- 缓存key: 使用冒号分隔的字符串
+- 类名: 使用PascalCase(如UserService)
+- 方法名: 使用camelCase(如getUserById)
+- 变量名: 使用camelCase(如userId)
+- 常量名: 使用UPPER_SNAKE_CASE(如MAX_RETRY_COUNT)
+- 包名: 使用小写字母(如com.ocbc.les.common)
+- 数据库表名: 使用snake_case(如sys_user)
+- 缓存key: 使用冒号分隔的字符串(如user:role:1001)
+- 接口命名: 动词+名词(如getUserList, updateRole)
 
 ### 注释规范
 
 - 类注释: 说明类的功能、作者、日期
+  ```java
+  /**
+   * 用户服务实现类
+   * 
+   * @author author
+   * @date 2024-03-20
+   */
+  ```
 - 方法注释: 说明方法的功能、参数、返回值
+  ```java
+  /**
+   * 根据ID获取用户信息
+   * 
+   * @param id 用户ID
+   * @return 用户信息
+   */
+  ```
 - 关键代码注释: 说明代码的作用和实现逻辑
 - 缓存注释: 说明缓存的用途、过期时间、更新策略
+
+### Git提交规范
+
+- 提交信息格式: `类型(范围): 描述`
+- 类型:
+  - feat: 新功能
+  - fix: 修复bug
+  - docs: 文档更新
+  - style: 代码格式调整
+  - refactor: 重构代码
+  - test: 测试相关
+  - chore: 构建过程或辅助工具变动
+- 示例: `feat(user): 添加用户密码重置功能`
 
 ## 部署说明
 
@@ -340,42 +349,189 @@ mvn clean package -DskipTests
 ### 部署步骤
 
 1. 准备环境
-   - 安装JDK 17+
+   - 安装JDK 21+
    - 安装SQLServer 2022
    - 安装Redis 6.0+
+   - 设置环境变量(可选)
 
 2. 配置应用
    - 修改application-prod.yml
    - 配置数据库连接
    - 配置Redis连接
    - 配置缓存参数
+   - 配置日志级别和路径
 
 3. 启动应用
 ```bash
-java -jar risk-management.jar
+java -jar risk-management.jar --spring.profiles.active=prod
+```
+
+4. 容器化部署(Docker)
+```bash
+# 构建镜像
+docker build -t risk-management:latest .
+
+# 运行容器
+docker run -d -p 8080:8080 -v /logs:/app/logs --name risk-management risk-management:latest
 ```
 
 ### 配置说明
 
 主要配置项:
 - 数据库连接配置
+  ```yaml
+  spring:
+    datasource:
+      url: jdbc:sqlserver://db-host:1433;databaseName=risk_management
+      username: db_user
+      password: db_password
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  ```
 - Redis连接配置
+  ```yaml
+  spring:
+    redis:
+      host: redis-host
+      port: 6379
+      password: redis_password
+      database: 0
+      timeout: 10000
+  ```
 - JWT配置
+  ```yaml
+  jwt:
+    secret: your-secret-key
+    expiration: 86400000  # 24小时
+    issuer: risk-management-system
+  ```
 - 日志配置
+  ```yaml
+  logging:
+    level:
+      root: INFO
+      com.ocbc.les: DEBUG
+    file:
+      path: /logs
+      name: risk-management.log
+  ```
 - 安全配置
+  ```yaml
+  security:
+    ignored-paths:
+      - /api/auth/**
+      - /doc.html
+      - /swagger-resources/**
+      - /v3/api-docs/**
+  ```
 - 缓存配置
+  ```yaml
+  spring:
+    cache:
+      type: redis
+      redis:
+        time-to-live: 3600000  # 1小时
+        cache-null-values: true
+  ```
+
+### 监控和维护
+
+- 健康检查: `http://localhost:8080/actuator/health`
+- 查看日志: `tail -f /logs/risk-management.log`
+- 重启服务: `systemctl restart risk-management`
 
 ## 接口文档
 
 访问地址: http://localhost:8080/doc.html
 
+### 接口认证
+
+大部分接口需要在请求头中添加JWT令牌:
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### 常见接口示例
+
+#### 用户登录
+- 请求: POST /api/auth/login
+- 请求体:
+  ```json
+  {
+    "username": "admin",
+    "password": "password"
+  }
+  ```
+- 响应:
+  ```json
+  {
+    "code": 200,
+    "message": "登录成功",
+    "data": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "userId": 1001,
+      "username": "admin"
+    }
+  }
+  ```
+
+#### 获取用户信息
+- 请求: GET /api/system/user/{id}
+- 响应:
+  ```json
+  {
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+      "id": 1001,
+      "username": "admin",
+      "realName": "管理员",
+      "email": "admin@example.com",
+      "roles": ["ADMIN"]
+    }
+  }
+  ```
+
 ## 贡献指南
 
-1. Fork 项目
-2. 创建特性分支
-3. 提交代码
-4. 创建Pull Request
+### 贡献流程
+
+1. Fork 项目到个人仓库
+2. 创建特性分支(`git checkout -b feature/your-feature`)
+3. 提交变更(`git commit -m 'feat: add some feature'`)
+4. 推送到远程分支(`git push origin feature/your-feature`)
+5. 创建Pull Request
+
+### 分支管理
+
+- `main`: 主分支,保持稳定可发布状态
+- `develop`: 开发分支,用于集成各个特性分支
+- `feature/*`: 特性分支,用于开发新功能
+- `fix/*`: 修复分支,用于修复缺陷
+- `release/*`: 发布分支,用于准备发布版本
+
+### 代码审查标准
+
+- 代码符合项目编码规范
+- 单元测试覆盖新增代码
+- 无安全漏洞
+- 文档已同步更新
+- 代码逻辑清晰易懂
+
+### 发布流程
+
+1. 从`develop`分支创建`release`分支
+2. 在`release`分支上修复问题并更新版本号
+3. 合并到`main`分支并打标签
+4. 合并回`develop`分支
 
 ## 许可证
 
-[MIT License](LICENSE) 
+[MIT License](LICENSE)
+
+本项目使用MIT许可证,允许任何人出于任何目的使用、复制、修改、合并、发布、分发、再许可和/或销售本软件的副本,但须在所有副本中包含上述版权声明和本许可声明。
+
+## 联系我们
+
+- 项目负责人: [姓名]
+- 联系邮箱: [邮箱]
+- 问题反馈: [GitHub Issues](https://github.com/your-username/risk-management/issues) 
