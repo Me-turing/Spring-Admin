@@ -4,54 +4,30 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.ocbc.les.common.annotation.dbkey.DistributedId;
 import com.ocbc.les.common.annotation.field.AutoFill;
 import com.ocbc.les.common.annotation.field.FillType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户表
+ * 角色权限关联表
  *
- * @TableName user_info
+ * @TableName role_permission
  */
-@TableName(value = "user_info")
+@TableName(value = "role_permission")
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserInfo implements Serializable {
+public class RolePermission implements Serializable {
     /**
-     * 用户ID
+     * 角色ID
      */
-    @TableField(fill = FieldFill.INSERT)
-    @DistributedId()
-    private String userId;
+    private String roleId;
 
     /**
-     * 登录ID
+     * 权限ID
      */
-    private String loginId;
-
-    /**
-     * 密码
-     */
-    private String password;
-
-    /**
-     * 中文名
-     */
-    private String userNameZh;
-
-    /**
-     * 英文名
-     */
-    private String userNameEn;
+    private String permissionId;
 
     /**
      * 状态（0：正常，1：停用）
@@ -88,14 +64,14 @@ public class UserInfo implements Serializable {
     /**
      * 更新者
      */
-    @AutoFill(value = FillType.USER_ID)
+    @AutoFill(FillType.USER_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateBy;
 
     /**
      * 更新者机构ID
      */
-    @AutoFill(value = FillType.ORG_ID)
+    @AutoFill(FillType.ORG_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateOrgId;
 

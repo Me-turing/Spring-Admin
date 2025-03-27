@@ -7,51 +7,55 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.ocbc.les.common.annotation.dbkey.DistributedId;
 import com.ocbc.les.common.annotation.field.AutoFill;
 import com.ocbc.les.common.annotation.field.FillType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户表
+ * 机构表
  *
- * @TableName user_info
+ * @TableName org_info
  */
-@TableName(value = "user_info")
+@TableName(value = "org_info")
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserInfo implements Serializable {
+public class OrgInfo implements Serializable {
     /**
-     * 用户ID
+     * 机构ID
      */
     @TableField(fill = FieldFill.INSERT)
-    @DistributedId()
-    private String userId;
+    @DistributedId
+    private String orgId;
 
     /**
-     * 登录ID
+     * 机构关键字
      */
-    private String loginId;
+    private String orgKey;
 
     /**
-     * 密码
+     * 机构中文名称
      */
-    private String password;
+    private String orgNameZh;
 
     /**
-     * 中文名
+     * 机构英文名称
      */
-    private String userNameZh;
+    private String orgNameEn;
 
     /**
-     * 英文名
+     * 父机构ID
      */
-    private String userNameEn;
+    private String parentId;
+
+    /**
+     * 机构类型（1：总部，2：分部，3：支部，4：组）
+     */
+    private String orgType;
+
+    /**
+     * 机构排序
+     */
+    private String orgSort;
 
     /**
      * 状态（0：正常，1：停用）
@@ -88,14 +92,14 @@ public class UserInfo implements Serializable {
     /**
      * 更新者
      */
-    @AutoFill(value = FillType.USER_ID)
+    @AutoFill(FillType.USER_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateBy;
 
     /**
      * 更新者机构ID
      */
-    @AutoFill(value = FillType.ORG_ID)
+    @AutoFill(FillType.ORG_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateOrgId;
 

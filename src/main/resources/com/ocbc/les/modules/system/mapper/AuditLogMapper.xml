@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ocbc.les.modules.system.mapper.AuditLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.ocbc.les.modules.system.entity.AuditLog">
+            <id property="auditId" column="audit_id" />
+            <result property="operationTime" column="operation_time" />
+            <result property="operationIp" column="operation_ip" />
+            <result property="operatorId" column="operator_id" />
+            <result property="operatorOrgId" column="operator_org_id" />
+            <result property="roleId" column="role_id" />
+            <result property="requestParams" column="request_params" />
+            <result property="responseResult" column="response_result" />
+            <result property="operationUrl" column="operation_url" />
+            <result property="operationDesc" column="operation_desc" />
+            <result property="operationResult" column="operation_result" />
+            <result property="errorMsg" column="error_msg" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        audit_id,operation_time,operation_ip,operator_id,operator_org_id,role_id,
+        request_params,response_result,operation_url,operation_desc,operation_result,
+        error_msg
+    </sql>
+</mapper>

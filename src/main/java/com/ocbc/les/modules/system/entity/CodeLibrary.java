@@ -4,54 +4,41 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.ocbc.les.common.annotation.dbkey.DistributedId;
 import com.ocbc.les.common.annotation.field.AutoFill;
 import com.ocbc.les.common.annotation.field.FillType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户表
+ * 码值库表
  *
- * @TableName user_info
+ * @TableName code_library
  */
-@TableName(value = "user_info")
+@TableName(value = "code_library")
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserInfo implements Serializable {
-    /**
-     * 用户ID
-     */
-    @TableField(fill = FieldFill.INSERT)
-    @DistributedId()
-    private String userId;
+public class CodeLibrary implements Serializable {
 
     /**
-     * 登录ID
+     * 码值类型
      */
-    private String loginId;
+    private String codeType;
 
     /**
-     * 密码
+     * 码值
      */
-    private String password;
+    private String codeValue;
 
     /**
-     * 中文名
+     * 码值名称
      */
-    private String userNameZh;
+    private String codeName;
 
     /**
-     * 英文名
+     * 显示顺序
      */
-    private String userNameEn;
+    private String codeSort;
 
     /**
      * 状态（0：正常，1：停用）
@@ -63,6 +50,36 @@ public class UserInfo implements Serializable {
      */
     @TableLogic
     private String delFlag;
+
+    /**
+     * 码值描述
+     */
+    private String codeDesc;
+
+    /**
+     * 拓展字段1
+     */
+    private String attribute1;
+
+    /**
+     * 拓展字段2
+     */
+    private String attribute2;
+
+    /**
+     * 拓展字段3
+     */
+    private String attribute3;
+
+    /**
+     * 拓展字段4
+     */
+    private String attribute4;
+
+    /**
+     * 拓展字段5
+     */
+    private String attribute5;
 
     /**
      * 创建者
@@ -88,14 +105,14 @@ public class UserInfo implements Serializable {
     /**
      * 更新者
      */
-    @AutoFill(value = FillType.USER_ID)
+    @AutoFill(FillType.USER_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateBy;
 
     /**
      * 更新者机构ID
      */
-    @AutoFill(value = FillType.ORG_ID)
+    @AutoFill(FillType.ORG_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateOrgId;
 

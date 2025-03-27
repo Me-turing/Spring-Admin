@@ -18,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 自动填充处理器
@@ -137,8 +136,9 @@ public class AutoFillHandler implements MetaObjectHandler {
         return switch (fillType) {
             case USER_ID -> "System";
             case ORG_ID -> "000000";
+            case ROLE_ID -> "999999";
+            case IP -> "127.0.0.1";
             case TIME -> LocalDateTime.now();
-            case Date -> new Date();
         };
     }
 

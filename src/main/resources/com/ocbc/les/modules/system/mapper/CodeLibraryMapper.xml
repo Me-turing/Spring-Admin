@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ocbc.les.modules.system.mapper.CodeLibraryMapper">
+
+    <resultMap id="BaseResultMap" type="com.ocbc.les.modules.system.entity.CodeLibrary">
+            <id property="codeType" column="code_type" />
+            <id property="codeValue" column="code_value" />
+            <result property="codeName" column="code_name" />
+            <result property="codeSort" column="code_sort" />
+            <result property="status" column="status" />
+            <result property="delFlag" column="del_flag" />
+            <result property="codeDesc" column="code_desc" />
+            <result property="attribute1" column="attribute1" />
+            <result property="attribute2" column="attribute2" />
+            <result property="attribute3" column="attribute3" />
+            <result property="attribute4" column="attribute4" />
+            <result property="attribute5" column="attribute5" />
+            <result property="createBy" column="create_by" />
+            <result property="createOrgId" column="create_org_id" />
+            <result property="createTime" column="create_time" />
+            <result property="updateBy" column="update_by" />
+            <result property="updateOrgId" column="update_org_id" />
+            <result property="updateTime" column="update_time" />
+            <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        code_type,code_value,code_name,code_sort,status,del_flag,
+        code_desc,attribute1,attribute2,attribute3,attribute4,
+        attribute5,create_by,create_org_id,create_time,update_by,
+        update_org_id,update_time,remark
+    </sql>
+</mapper>

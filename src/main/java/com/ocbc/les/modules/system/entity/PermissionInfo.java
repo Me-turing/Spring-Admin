@@ -7,51 +7,50 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.ocbc.les.common.annotation.dbkey.DistributedId;
 import com.ocbc.les.common.annotation.field.AutoFill;
 import com.ocbc.les.common.annotation.field.FillType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 用户表
+ * 权限表
  *
- * @TableName user_info
+ * @TableName permission_info
  */
-@TableName(value = "user_info")
+@TableName(value = "permission_info")
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserInfo implements Serializable {
+public class PermissionInfo implements Serializable {
     /**
-     * 用户ID
+     * 权限ID
      */
     @TableField(fill = FieldFill.INSERT)
-    @DistributedId()
-    private String userId;
+    @DistributedId
+    private String permissionId;
 
     /**
-     * 登录ID
+     * 权限标识
      */
-    private String loginId;
+    private String permissionKey;
 
     /**
-     * 密码
+     * 权限中文名称
      */
-    private String password;
+    private String permissionNameZh;
 
     /**
-     * 中文名
+     * 权限英文名称
      */
-    private String userNameZh;
+    private String permissionNameEn;
 
     /**
-     * 英文名
+     * 权限分组（如：system, business等）
      */
-    private String userNameEn;
+    private String permissionGroup;
+
+    /**
+     * 显示顺序
+     */
+    private String permissionSort;
 
     /**
      * 状态（0：正常，1：停用）
@@ -88,14 +87,14 @@ public class UserInfo implements Serializable {
     /**
      * 更新者
      */
-    @AutoFill(value = FillType.USER_ID)
+    @AutoFill(FillType.USER_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateBy;
 
     /**
      * 更新者机构ID
      */
-    @AutoFill(value = FillType.ORG_ID)
+    @AutoFill(FillType.ORG_ID)
     @TableField(fill = FieldFill.UPDATE)
     private String updateOrgId;
 
