@@ -160,6 +160,7 @@ public class SystemStartupListener implements CommandLineRunner {
     private void initializeSystemData() {
         log.info("开始初始化系统必要数据到缓存...");
 
+        //TODO: 一些必要缓存可以在此处优先预载到本地
         
         log.info("系统数据初始化完成\n");
     }
