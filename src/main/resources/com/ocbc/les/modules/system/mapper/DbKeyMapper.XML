@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ocbc.les.modules.system.mapper.DbKeyMapper">
+
+    <resultMap id="BaseResultMap" type="com.ocbc.les.modules.system.entity.DbKey">
+        <result property="entityName" column="entity_name"/>
+        <result property="tableName" column="table_name"/>
+        <result property="prefix" column="prefix"/>
+        <result property="dateFormat" column="date_format"/>
+        <result property="paddingLength" column="padding_length"/>
+        <result property="batchSize" column="batch_size"/>
+        <result property="currentId" column="current_id"/>
+        <result property="currentLetterPosition" column="current_letter_position"/>
+        <result property="recordDate" column="record_date"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        table_name,entity_name,prefix,date_format,padding_length,
+        batch_size,current_id,current_letter_position,record_date,last_update_time
+    </sql>
+
+    <!-- 根据表名查询配置 -->
+    <select id="selectByTableName" resultType="com.ocbc.les.modules.system.entity.DbKey">
+        SELECT *
+        FROM db_key
+        WHERE table_name = #{tableName}
+    </select>
+
+    <!-- 更新当前ID -->
+    <update id="updateCurrentId">
+        UPDATE db_key
+        SET current_id       = #{currentId},
+            last_update_time = GETDATE()
+        WHERE table_name = #{tableName}
+    </update>
+
+    <!-- 更新当前字母位置 -->
+    <update id="updateCurrentLetterPosition">
+        UPDATE db_key
+        SET current_letter_position = #{currentLetterPosition},
+            last_update_time        = GETDATE()
+        WHERE table_name = #{tableName}
+    </update>
+
+    <!-- 更新当前日期 -->
+    <update id="updateCurrentDate">
+        UPDATE db_key
+        SET record_date      = #{recordDate},
+            last_update_time = GETDATE()
+        WHERE table_name = #{tableName}
+    </update>
+</mapper>
