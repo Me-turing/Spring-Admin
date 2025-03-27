@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 字段缓存工具类
+ * - 初始容量100
+ * - 最大容量1000
+ * - 过期时间1天
  */
 @Slf4j
 @Component
@@ -22,7 +25,7 @@ public class FieldCacheUtils {
         fieldCache = Caffeine.newBuilder()
                 .initialCapacity(100)                // 初始容量
                 .maximumSize(1000)                   // 最大容量
-                .expireAfterWrite(24, TimeUnit.HOURS) // 写入后过期时间
+                .expireAfterWrite(1, TimeUnit.DAYS) // 写入后过期时间
                 .recordStats()                       // 开启统计
                 .removalListener((key, value, cause) ->
                         log.debug("Key {} was removed from field cache, cause: {}", key, cause))

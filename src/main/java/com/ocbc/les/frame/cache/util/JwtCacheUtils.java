@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  * Jwt的缓存工具
  * 此处采用二级缓存: Caffeine + Redis
  * 注意: Caffeine的初始化有固定大小本地没有会尝试从云端同步
+ * - 最大容量80
+ * - 过期时间5分钟
  */
 @Slf4j
 @Component
