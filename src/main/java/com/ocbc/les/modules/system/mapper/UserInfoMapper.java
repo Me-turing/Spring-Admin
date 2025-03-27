@@ -2,34 +2,26 @@ package com.ocbc.les.modules.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ocbc.les.modules.system.entity.UserInfo;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 /**
- * 用户信息Mapper接口
- */
-@Mapper
+* @author 23399
+* @description 针对表【user_info(用户表)】的数据库操作Mapper
+* @createDate 2025-03-27 16:33:29
+* @Entity com.ocbc.les.modules.system.entity.UserInfo
+*/
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
-    
+
     /**
      * 根据登录ID查询用户信息
      *
-     * @param userId 用户ID
+     * @param loginId 用户ID
      * @return 用户信息
      */
-    @Select("SELECT * FROM user_info WHERE user_id = #{userId}")
-    UserInfo selectById(@Param("userId") String userId);
+    @Select("SELECT * FROM user_info WHERE login_id = #{loginId}")
+    UserInfo selectById(@Param("loginId") String loginId);
 
-    /**
-     * 更新用户信息
-     *
-     * @param userInfo 用户信息
-     * @return
-     */
-    @Update("UPDATE user_info SET last_login_time = #{lastLoginTime}, update_time = GETDATE() WHERE id = #{id}")
-    int updateById(UserInfo userInfo);
 
     /**
      * 新增用户
@@ -37,4 +29,8 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      * @param userInfo 用户信息
      */
     void addUser(UserInfo userInfo);
-} 
+}
+
+
+
+

@@ -1,18 +1,20 @@
 package com.ocbc.les.modules.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ocbc.les.modules.system.entity.UserInfo;
-import com.ocbc.les.modules.system.mapper.UserInfoMapper;
 import com.ocbc.les.modules.system.service.UserInfoService;
-import lombok.extern.slf4j.Slf4j;
+import com.ocbc.les.modules.system.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 用户信息服务实现类
- */
+* @author 23399
+* @description 针对表【user_info(用户表)】的数据库操作Service实现
+* @createDate 2025-03-27 16:33:29
+*/
 @Service
-@Slf4j
-public class UserInfoServiceImpl implements UserInfoService {
+public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo>
+    implements UserInfoService{
 
     private final UserInfoMapper userInfoMapper;
     @Autowired
@@ -26,12 +28,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public void updateUser(UserInfo userInfo) {
-        userInfoMapper.updateById(userInfo);
-    }
-
-    @Override
     public void addUser(UserInfo userInfo) {
         userInfoMapper.addUser(userInfo);
     }
+
 }
+
+
+
+

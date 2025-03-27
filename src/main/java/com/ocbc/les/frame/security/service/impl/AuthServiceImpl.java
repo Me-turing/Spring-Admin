@@ -5,7 +5,6 @@ import com.ocbc.les.common.config.Sm4PasswordEncoder;
 import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.util.MessageUtils;
-import com.ocbc.les.common.util.RequestContextUtils;
 import com.ocbc.les.frame.cache.entity.JwtCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenVO login(LoginRequestDTO loginRequest) {
         // 加载用户信息
-        UserInfo userInfo = userInfoService.getUserById(loginRequest.getUserId());
+        UserInfo userInfo = userInfoService.getUserById(loginRequest.getLoginId());
         if (ObjectUtil.isEmpty(userInfo)) {
             throw new BusinessException(MessageUtils.getMessage("auth.login.wrongcredentials"));
         }
@@ -55,16 +53,6 @@ public class AuthServiceImpl implements AuthService {
         // 验证密码 TODO: 注意当前使用的是明文
         if (!sm4PasswordEncoder.matches(loginRequest.getPassword(), customAuthentication.getPassword())) {
             throw new BusinessException(MessageUtils.getMessage("auth.login.wrongcredentials"));
-        }
-
-        // 更新用户最后登录信息
-        try {
-            userInfo.setLastLoginTime(LocalDateTime.now());
-            userInfo.setLastLoginIp(RequestContextUtils.getIpAddress());
-            userInfoService.updateUser(userInfo);
-        } catch (Exception e) {
-            log.error(MessageUtils.getMessage("user.update.error"), e);
-            // 不影响登录流程,继续执行
         }
 
         // 生成访问令牌

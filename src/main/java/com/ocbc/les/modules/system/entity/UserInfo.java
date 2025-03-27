@@ -1,6 +1,10 @@
 package com.ocbc.les.modules.system.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.ocbc.les.common.annotation.dbkey.DistributedId;
 import com.ocbc.les.common.annotation.field.AutoFill;
 import com.ocbc.les.common.annotation.field.FillType;
 import lombok.AllArgsConstructor;
@@ -9,7 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -23,15 +26,16 @@ import java.util.Date;
 @NoArgsConstructor
 public class UserInfo implements Serializable {
     /**
-     * 
+     * 用户ID
      */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+    @TableField(fill = FieldFill.INSERT)
+    @DistributedId()
+    private String userId;
 
     /**
-     * 
+     * 登录ID
      */
-    private String userId;
+    private String loginId;
 
     /**
      * 密码
@@ -49,24 +53,9 @@ public class UserInfo implements Serializable {
     private String userNameEn;
 
     /**
-     * 所属机构ID
-     */
-    private Long orgId;
-
-    /**
      * 状态（0：正常，1：停用）
      */
     private String status;
-
-    /**
-     * 最后登录时间
-     */
-    private LocalDateTime lastLoginTime;
-
-    /**
-     * 最后登录IP
-     */
-    private String lastLoginIp;
 
     /**
      * 删除标志（0：存在，1：删除）
@@ -86,7 +75,7 @@ public class UserInfo implements Serializable {
      */
     @AutoFill(FillType.ORG_ID)
     @TableField(fill = FieldFill.INSERT)
-    private Long createOrgId;
+    private String createOrgId;
 
     /**
      * 创建时间
@@ -107,7 +96,7 @@ public class UserInfo implements Serializable {
      */
     @AutoFill(value = FillType.ORG_ID)
     @TableField(fill = FieldFill.UPDATE)
-    private Long updateOrgId;
+    private String updateOrgId;
 
     /**
      * 更新时间

@@ -131,12 +131,12 @@ public class AutoFillHandler implements MetaObjectHandler {
     }
 
     /**
-     * 获取字段值
+     * 获取字段值 TODO: 此处应该从缓存中获取
      */
     private Object getFieldValue(FillType fillType) {
         return switch (fillType) {
-            case USER_ID -> "userId";
-            case ORG_ID -> 100L;
+            case USER_ID -> "System";
+            case ORG_ID -> "000000";
             case TIME -> LocalDateTime.now();
             case Date -> new Date();
         };

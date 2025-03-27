@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-
 /**
  * 测试控制器
  */
@@ -40,15 +38,10 @@ public class TestController {
     @GetMapping("/addUserTest")
     public Result<?> addUserTest(){
         UserInfo userInfo = UserInfo.builder()
-                .userId("test001")
+                .loginId("test001")
                 .password("xxxxxx")
                 .userNameEn("En")
                 .userNameZh("Zh")
-                .orgId(1L)
-                .status("1")
-                .lastLoginTime(LocalDateTime.now())
-                .lastLoginIp("127.0.0.1")
-                .delFlag("0")
                 .build();
         userInfoServiceImpl.addUser(userInfo);
         return Result.success();
