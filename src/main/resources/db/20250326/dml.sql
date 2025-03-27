@@ -18,12 +18,12 @@ BEGIN TRY
     -- 使用MERGE语句插入用户数据
     MERGE user_info AS target
     USING (VALUES 
-        (N'admin', N'$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', N'系统管理员', N'System Administrator', 4, N'0', N'admin', 4, N'超级管理员')
-    ) AS source (login_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
-    ON target.user_id = source.login_id
+        (N'admin', N'admin', N'5ac537f82817f1d478fccc441857ef25', N'系统管理员', N'System Administrator', 4, N'0', N'admin', 4, N'超级管理员')
+    ) AS source (id,user_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
+    ON target.id = source.id
     WHEN NOT MATCHED THEN
-        INSERT (user_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
-        VALUES (source.login_id, source.password, source.user_name_zh, source.user_name_en, source.org_id, source.status, source.create_by, source.create_org_id, source.remark);
+        INSERT (id,user_id, password, user_name_zh, user_name_en, org_id, status, create_by, create_org_id, remark)
+        VALUES (source.id,source.user_id, source.password, source.user_name_zh, source.user_name_en, source.org_id, source.status, source.create_by, source.create_org_id, source.remark);
 
     -- 使用MERGE语句插入角色数据
     MERGE role_info AS target
