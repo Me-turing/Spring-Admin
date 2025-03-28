@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -74,14 +73,13 @@ public class JwtCacheUtils {
      * @param userId 用户ID
      * @return JwtCache
      */
-    public JwtCache initJwt(String token , String userId, List<String> authorities) {
+    public JwtCache initJwt(String token , String userId) {
          return JwtCache.builder()
                  .token(token)
                  .userId(userId)
                  .loginIp(RequestContextUtils.getIpAddress())
                  .createdTime(jwtUtils.getIssuedAtDateFromToken(token))
                  .expirationTime(jwtUtils.getExpirationDateFromToken(token))
-                 .authorities(authorities)
                  .refreshTime(System.currentTimeMillis() + refreshTime * 1000)
                  .build();
     }

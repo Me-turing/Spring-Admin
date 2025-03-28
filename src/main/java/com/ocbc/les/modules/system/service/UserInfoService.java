@@ -1,12 +1,12 @@
 package com.ocbc.les.modules.system.service;
 
+import com.ocbc.les.frame.cache.entity.UserDetailCache;
+import com.ocbc.les.modules.system.dto.GetUserDetailsDTO;
 import com.ocbc.les.modules.system.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @author 23399
-* @description 针对表【user_info(用户表)】的数据库操作Service
-* @createDate 2025-03-27 16:33:29
+* 针对表【user_info(用户表)】的数据库操作Service
 */
 public interface UserInfoService extends IService<UserInfo> {
 
@@ -20,4 +20,5 @@ public interface UserInfoService extends IService<UserInfo> {
 
     void addUser(UserInfo userInfo);
 
+    UserDetailCache getUserDetails(GetUserDetailsDTO userDetailsDTO);
 }

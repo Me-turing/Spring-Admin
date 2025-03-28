@@ -3,11 +3,8 @@ package com.ocbc.les.frame.security.config;
 import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Data
@@ -15,21 +12,31 @@ public class CustomAuthentication implements Authentication {
     private final String userId;
     private final String username;
     private final String password;
-    private final List<SimpleGrantedAuthority> authorities;
+//    private final List<SimpleGrantedAuthority> authorities;
     private boolean authenticated = true;
 
-    public CustomAuthentication(String userId, String username,String password, List<String> roles) {
+
+    public CustomAuthentication(String userId, String username) {
+        this.userId = userId;
+        this.username = username;
+        this.password = null;
+//        this.authorities = roles.stream()
+//                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+//                .collect(Collectors.toList());
+    }
+
+    public CustomAuthentication(String userId, String username,String password) {
         this.userId = userId;
         this.username = username;
         this.password = password;
-        this.authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
+//        this.authorities = roles.stream()
+//                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+//                .collect(Collectors.toList());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
     }
 
     @Override

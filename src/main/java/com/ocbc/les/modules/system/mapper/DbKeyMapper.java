@@ -1,6 +1,6 @@
 package com.ocbc.les.modules.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import com.ocbc.les.modules.system.entity.DbKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +11,7 @@ import java.util.Date;
  * 分布式ID生成器配置Mapper
  */
 @Mapper
-public interface DbKeyMapper extends BaseMapper<DbKey> {
+public interface DbKeyMapper extends MPJBaseMapper<DbKey> {
 
     /**
      * 根据表名查询配置

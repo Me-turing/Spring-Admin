@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @TableName(value = "role_info")
 @Data
 public class RoleInfo implements Serializable {
+
     /**
      * 角色ID
      */

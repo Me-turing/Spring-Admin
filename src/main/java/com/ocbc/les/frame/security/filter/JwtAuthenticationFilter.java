@@ -23,7 +23,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * JWT认证过滤器
@@ -92,9 +91,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         // 从JWT中获取用户信息
                         String userId = jwtUtils.getUserIdFromToken(tokenStr);
                         String username = jwtUtils.getUsernameFromToken(tokenStr);
-                        List<String> authorities = jwtUtils.getAuthoritiesFromToken(tokenStr);
+//                        List<String> authorities = jwtUtils.getAuthoritiesFromToken(tokenStr);
 
-                        CustomAuthentication customAuthentication = new CustomAuthentication(userId, username, null, authorities);
+                        CustomAuthentication customAuthentication = new CustomAuthentication(userId, username);
                         jwtCacheUtils.renewJwt(loginId); //续期
 
                         SecurityContextHolder.getContext().setAuthentication(customAuthentication);

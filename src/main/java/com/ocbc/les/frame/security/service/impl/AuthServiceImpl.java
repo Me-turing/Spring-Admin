@@ -5,8 +5,11 @@ import com.ocbc.les.common.config.Sm4PasswordEncoder;
 import com.ocbc.les.common.exception.BusinessException;
 import com.ocbc.les.common.response.Result;
 import com.ocbc.les.common.util.MessageUtils;
+import com.ocbc.les.common.util.RequestContextUtils;
 import com.ocbc.les.frame.cache.entity.JwtCache;
+import com.ocbc.les.frame.cache.entity.UserDetailCache;
 import com.ocbc.les.frame.cache.util.JwtCacheUtils;
+import com.ocbc.les.frame.cache.util.UserDetailCacheUtils;
 import com.ocbc.les.frame.security.config.CustomAuthentication;
 import com.ocbc.les.frame.security.dto.LoginRequestDTO;
 import com.ocbc.les.frame.security.service.AuthService;
@@ -18,8 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -30,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtils jwtUtils;
     private final Sm4PasswordEncoder sm4PasswordEncoder;
     private final JwtCacheUtils jwtCacheUtils;
+    private final UserDetailCacheUtils userDetailCacheUtils;
 
     @Override
     public TokenVO login(LoginRequestDTO loginRequest) {
@@ -45,10 +48,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 返回UserDetails对象
-        //TODO: 此处需要处理用户的权限
-        List<String> roleList = Arrays.asList("USER", "ADMIN");
-        CustomAuthentication customAuthentication = new CustomAuthentication(userInfo.getUserId(), userInfo.getUserNameZh(), userInfo.getPassword(), roleList);
-
+        CustomAuthentication customAuthentication = new CustomAuthentication(userInfo.getUserId(), userInfo.getUserNameZh(), userInfo.getPassword());
 
         // 验证密码 TODO: 注意当前使用的是明文
         if (!sm4PasswordEncoder.matches(loginRequest.getPassword(), customAuthentication.getPassword())) {
@@ -59,8 +59,17 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtils.generateToken(customAuthentication);
 
         // 初始化存储Token信息
-        JwtCache jwtCache = jwtCacheUtils.initJwt(accessToken, userInfo.getUserId(),roleList);
+        JwtCache jwtCache = jwtCacheUtils.initJwt(accessToken, userInfo.getUserId());
         jwtCacheUtils.putJwt(userInfo.getUserId(), jwtCache);
+
+        //创建当前用户详情的缓存
+        UserDetailCache userDetailCache = UserDetailCache.builder()
+                .userId(userInfo.getUserId())
+                .userNameZh(userInfo.getUserNameZh())
+                .userNameEn(userInfo.getUserNameEn())
+                .loginIp(RequestContextUtils.getIpAddress())
+                .loginTime(LocalDateTime.now()).build();
+        userDetailCacheUtils.putUserDetail(userInfo.getUserId(),userDetailCache);
 
         // 构建并返回TokenDTO
         return TokenVO.builder()
@@ -72,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Result<?> logout(String requestUserId) {
         jwtCacheUtils.removeJwt(requestUserId);
+        userDetailCacheUtils.removeUserDetail(requestUserId);
         return Result.success(MessageUtils.getMessage("auth.logout.success"));
     }
 }

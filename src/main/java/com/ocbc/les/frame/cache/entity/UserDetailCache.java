@@ -1,11 +1,17 @@
 package com.ocbc.les.frame.cache.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserDetailCache {
     private String userId;           // 用户ID
     private String userNameZh;       // 用户中文名
@@ -22,6 +28,9 @@ public class UserDetailCache {
     private List<MenuTree> menuTrees; // 菜单树
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class MenuTree{
         private String menuId;           // 菜单ID
         private String menuNameZh;       // 菜单中文名

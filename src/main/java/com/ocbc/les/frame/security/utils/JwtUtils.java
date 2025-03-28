@@ -9,16 +9,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * JWT工具类
@@ -46,11 +43,11 @@ public class JwtUtils {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", customAuthentication.getUserId());
         claims.put("userName", customAuthentication.getName());
-        // 将用户权限添加到claims中
-        List<String> authorities = customAuthentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
-        claims.put("authorities", authorities);
+//        // 将用户权限添加到claims中
+//        List<String> authorities = customAuthentication.getAuthorities().stream()
+//            .map(GrantedAuthority::getAuthority)
+//            .collect(Collectors.toList());
+//        claims.put("authorities", authorities);
         
         return doGenerateToken(claims, customAuthentication.getUsername());
     }
@@ -85,21 +82,21 @@ public class JwtUtils {
         }
     }
 
-    /**
-     * 从Token中获取权限列表
-     */
-    @SuppressWarnings("unchecked")
-    public List<String> getAuthoritiesFromToken(String token) {
-        try {
-            Claims claims = getAllClaimsFromToken(token);
-            return (List<String>) claims.get("authorities");
-        } catch (ExpiredJwtException e) {
-            return (List<String>) e.getClaims().get("authorities");
-        } catch (Exception e) {
-            log.error(MessageUtils.getMessage("log.token.nouserauthorities"), e);
-            return List.of();
-        }
-    }
+//    /**
+//     * 从Token中获取权限列表
+//     */
+//    @SuppressWarnings("unchecked")
+//    public List<String> getAuthoritiesFromToken(String token) {
+//        try {
+//            Claims claims = getAllClaimsFromToken(token);
+//            return (List<String>) claims.get("authorities");
+//        } catch (ExpiredJwtException e) {
+//            return (List<String>) e.getClaims().get("authorities");
+//        } catch (Exception e) {
+//            log.error(MessageUtils.getMessage("log.token.nouserauthorities"), e);
+//            return List.of();
+//        }
+//    }
 
     /**
      * 从Token中获取过期时间

@@ -7,9 +7,8 @@ import com.ocbc.les.modules.system.mapper.AuditLogMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author 23399
-* @description 针对表【audit_log(审计日志表)】的数据库操作Service实现
-* @createDate 2025-03-27 22:34:33
+
+* 针对表【audit_log(审计日志表)】的数据库操作Service实现
 */
 @Service
 public class AuditLogServiceImpl extends ServiceImpl<AuditLogMapper, AuditLog>

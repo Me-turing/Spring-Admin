@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder
@@ -28,10 +27,10 @@ public class JwtCache {
      */
     private String userId;
 
-    /**
-     * 权限
-     */
-    private List<String> authorities;
+//    /**
+//     * 权限
+//     */
+//    private List<String> authorities;
 
     /**
      * 登录IP
